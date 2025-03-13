@@ -1,6 +1,6 @@
 "use client";
 
-import React, { CSSProperties, ReactElement, useState } from "react";
+import React, { CSSProperties, ReactElement, useRef, useState } from "react";
 
 import {
   DndContext,
@@ -11,12 +11,13 @@ import {
   PointerActivationConstraint,
   Modifiers,
   useSensors,
+  Modifier
 } from "@dnd-kit/core";
 
-import { Axis, OverflowWrapper, Wrapper } from "../lib/BaseWidgetStuff";
+import { Axis, OverflowWrapper } from "../lib/BaseWidgetStuff";
 
 import WidgetBase from "./WidgetBase";
-import { restrictToWindowEdges } from "@dnd-kit/modifiers";
+import { restrictToBoundingRect } from "@dnd-kit/modifiers";
 
 interface Props {
   activationConstraint?: PointerActivationConstraint;
@@ -49,32 +50,45 @@ Props) {
   const keyboardSensor = useSensor(KeyboardSensor, {});
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
 
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const restrictToWhiteBoard: Modifier = ({ draggingNodeRect, transform }) => {
+    if (!draggingNodeRect || !wrapperRef.current) return transform;
+
+    return restrictToBoundingRect(transform, draggingNodeRect, wrapperRef.current.getBoundingClientRect());
+  };
+
   return (
-    <div className="">
-      <OverflowWrapper>
-      <button
-        className="bg-amber-700 h-8 w-8 left-7"
-        onClick={() => {
-          addWidget([
-            ...widgets,
-            <WidgetBase
-              key={nextId++}
-              id={nextId}
-              label="Test Widget"
-              axis={axis}
-              handle={handle}
-              style={style}
-              buttonStyle={buttonStyle}
-            />,
-          ]);
-        }}
-      >
-        Add
-      </button>
-      <DndContext sensors={sensors} modifiers={[restrictToWindowEdges]}>
-        <Wrapper>{widgets}</Wrapper>
-      </DndContext>
-      </OverflowWrapper>
-    </div>
+    <OverflowWrapper>
+      <div className="flex bg-gray-300 border-2 justify-center min-h-screen">
+        <button
+          className="bg-amber-700"
+          onClick={() => {
+            addWidget([
+              ...widgets,
+              <WidgetBase
+                key={nextId++}
+                id={nextId}
+                label="Test Widget"
+                axis={axis}
+                handle={handle}
+                style={style}
+                buttonStyle={buttonStyle}
+              />,
+            ]);
+          }}
+        >
+          Add
+        </button>
+        <DndContext
+          sensors={sensors}
+          modifiers={[restrictToWhiteBoard]}
+        >
+          <div ref={wrapperRef} className="bg-lime-400 min-w-2xl">
+            {widgets}
+          </div>
+        </DndContext>
+      </div>
+    </OverflowWrapper>
   );
 }

@@ -6,13 +6,14 @@ import styles from './Wrapper.module.css';
 interface Props {
   children: React.ReactNode;
   center?: boolean;
+  className?: string
   style?: React.CSSProperties;
 }
 
-export function Wrapper({children, center, style}: Props) {
+export function Wrapper({children, center, className, style}: Props) {
   return (
     <div
-      className={classNames(styles.Wrapper, center && styles.center)}
+      className={className + " " + classNames(styles.Wrapper, center && styles.center)}
       style={style}
     >
       {children}
