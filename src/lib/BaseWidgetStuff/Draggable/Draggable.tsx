@@ -83,7 +83,7 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
           {handle ? <Handle {...(handle ? listeners : {})} /> : null}
           {props.children}
         </button>
-        {label ? <label>{label}</label> : null}
+        {/* {label ? <label>{label}</label> : null} */}
       </div>
     );
   }

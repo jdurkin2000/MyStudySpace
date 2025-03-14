@@ -1,9 +1,14 @@
 "use client";
 
-import { DragPendingEvent, useDndMonitor, useDraggable } from "@dnd-kit/core";
+import {
+  DragPendingEvent,
+  useDndMonitor,
+  useDraggable,
+  useDroppable,
+} from "@dnd-kit/core";
 
 import { Axis, Draggable } from "../lib/BaseWidgetStuff";
-import { Coordinates } from "@dnd-kit/core/dist/types";
+import { Coordinates, DragEndEvent } from "@dnd-kit/core/dist/types";
 import { useState, useRef, useCallback } from "react";
 
 interface WidgetBaseProps {
@@ -31,37 +36,63 @@ export default function WidgetBase({
   buttonStyle,
   children,
 }: WidgetBaseProps) {
-  const { attributes, isDragging, listeners, setNodeRef, transform } =
-    useDraggable({
-      id: id
-    });
+  const {
+    attributes,
+    isDragging,
+    listeners,
+    setNodeRef: setDraggableRef,
+    transform,
+  } = useDraggable({
+    id: id,
+  });
+
+  const {
+    over,
+    setNodeRef: setDroppableRef,
+  } = useDroppable({
+    id: id,
+  });
+
+  const combinedButtonStyle = {
+    ...buttonStyle,
+    border:
+      isDragging && over !== null && over.id != id
+        ? "2px solid red"
+        : buttonStyle?.border,
+  };
+
+  const combinedRef = (node: HTMLElement | null) => {
+    setDraggableRef(node);
+    setDroppableRef(node);
+  };
 
   const defaultCoordinates = top && left ? { x: left, y: top } : { x: 0, y: 0 };
 
   const [{ x, y }, setCoordinates] = useState<Coordinates>(defaultCoordinates);
 
   useDndMonitor({
-    onDragEnd(event) {
-      if (event.active.id === id) {
+    onDragEnd({ delta, over, active }) {
+      if ((!over || over.id == id) && active.id === id) {
         setCoordinates(({ x, y }) => {
           return {
-            x: x + event.delta.x,
-            y: y + event.delta.y,
+            x: x + delta.x,
+            y: y + delta.y,
           };
         });
+      } else {
       }
     },
   });
 
   return (
     <Draggable
-      ref={setNodeRef}
+      ref={combinedRef}
       dragging={isDragging}
       handle={handle}
       label={label}
       listeners={listeners}
       style={{ ...style, left: `${x}px`, top: `${y}px` }}
-      buttonStyle={buttonStyle}
+      buttonStyle={combinedButtonStyle}
       transform={transform}
       axis={axis}
       {...attributes}
@@ -123,6 +154,21 @@ export function WidgetBaseVisualCue(props: WidgetBaseProps) {
   );
 
   const handlePendingEnd = useCallback(() => setIsPending(false), []);
+
+  const defaultCoordinates =
+    props.top && props.left ? { x: props.left, y: props.top } : { x: 0, y: 0 };
+  const [{ x, y }, setCoordinates] = useState<Coordinates>(defaultCoordinates);
+
+  const handleTransformEnd = (event: DragEndEvent) => {
+    if (event.active.id === props.id) {
+      setCoordinates(({ x, y }) => {
+        return {
+          x: x + event.delta.x,
+          y: y + event.delta.y,
+        };
+      });
+    }
+  };
 
   useDndMonitor({
     onDragPending: handlePending,
