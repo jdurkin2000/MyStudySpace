@@ -22,6 +22,7 @@ import { Axis, OverflowWrapper } from "../lib/BaseWidgetStuff";
 
 import WidgetBase from "./WidgetBase";
 import { restrictToBoundingRect } from "@dnd-kit/modifiers";
+import ExampleWidget from "./widget-components/ExampleWidget";
 
 interface Props {
   activationConstraint?: PointerActivationConstraint;
@@ -79,7 +80,7 @@ Props) {
         handle={handle}
         style={style}
         buttonStyle={buttonStyle}
-      />,
+      ><ExampleWidget/></WidgetBase>,
     ]);
   };
 

@@ -75,11 +75,11 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
           ref={ref}
           style={buttonStyle}
         >
-          {axis === Axis.Vertical
+          {/* {axis === Axis.Vertical
             ? draggableVertical
             : axis === Axis.Horizontal
             ? draggableHorizontal
-            : draggable}
+            : draggable} */}
           {handle ? <Handle {...(handle ? listeners : {})} /> : null}
           {props.children}
         </button>

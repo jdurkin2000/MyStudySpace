@@ -46,10 +46,7 @@ export default function WidgetBase({
     id: id,
   });
 
-  const {
-    over,
-    setNodeRef: setDroppableRef,
-  } = useDroppable({
+  const { over, setNodeRef: setDroppableRef } = useDroppable({
     id: id,
   });
 
