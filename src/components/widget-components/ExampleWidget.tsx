@@ -1,5 +1,5 @@
-import Image from "next/image"
 import WidgetBase, { WidgetBaseProps } from "components/WidgetBase"
+import Image from "next/image"
 
 /* --IMPORTANT-- make sure your component function is *not* default, and add the export line for 
 this component function with braces in the index.ts file within this folder*/

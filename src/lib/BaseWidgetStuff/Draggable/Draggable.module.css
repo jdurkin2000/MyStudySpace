@@ -19,7 +19,7 @@
   box-shadow: var(--box-shadow);
   transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0) scale(var(--scale, 1));
   transition: box-shadow 300ms ease;
-
+  
 
   &.pendingDelay {
     animation: pending linear;
@@ -30,7 +30,7 @@
 
   &:not(.handle) {
     touch-action: none;
-    cursor: grab;
+    cursor:grab;
 
     &:focus-visible:not(.active &) {
       box-shadow: 0 0 0 3px #4c9ffe;
@@ -50,13 +50,10 @@
   }
 
   &.dragging {
-    z-index: 1;
+    z-index: 9999;
     transition: none;
-
-    * {
-      cursor: grabbing;
-    }
-
+    cursor:grabbing;
+    
     --scale: 1.06;
     --box-shadow: -1px 0 15px 0 rgba(34, 33, 81, 0.01),
     0px 15px 15px 0 rgba(34, 33, 81, 0.25);

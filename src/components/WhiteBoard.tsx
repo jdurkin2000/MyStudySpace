@@ -1,6 +1,6 @@
 "use client";
 
-import React, {  ReactElement, useRef, useState } from "react";
+import React, { ReactElement, useRef, useState } from "react";
 
 import {
   DndContext,
@@ -11,7 +11,6 @@ import {
   useSensors,
   Modifier,
   DragOverlay,
-  DragStartEvent,
   DropAnimation,
   UniqueIdentifier,
 } from "@dnd-kit/core";
@@ -19,15 +18,17 @@ import {
 import { OverflowWrapper } from "lib/BaseWidgetStuff";
 
 import WidgetBase from "components/WidgetBase";
-import { restrictToBoundingRect } from "@dnd-kit/modifiers";
+import { restrictToBoundingRect, createSnapModifier } from "@dnd-kit/modifiers";
 import * as Widgets from "components/widget-components";
 
 let nextId = 0;
+const gridSize = 30;
 
 export default function WhiteBoard() {
   const [widgets, addWidget] = useState<ReactElement<typeof WidgetBase>[]>([]);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const [doDropAnim, setDropAnim] = useState<boolean>(false);
+  const [doSnapGrid, setSnapGrid] = useState<boolean>(false);
 
   const mouseSensor = useSensor(MouseSensor, {});
   const touchSensor = useSensor(TouchSensor, {});
@@ -45,6 +46,7 @@ export default function WhiteBoard() {
       wrapperRef.current.getBoundingClientRect()
     );
   };
+  const snapToGrid: Modifier = createSnapModifier(gridSize);
 
   const clickHandler = (widgetName: string) => {
     const widget = Object.entries(Widgets).find(([key]) => key == widgetName);
@@ -53,10 +55,22 @@ export default function WhiteBoard() {
       const [, WidgetComponent] = widget;
 
       if (typeof WidgetComponent === "function") {
-        const currId = nextId++
-      
+        const currId = nextId++;
+
         addWidget([...widgets, <WidgetComponent key={currId} id={currId} />]);
       }
+    }
+  };
+
+  const keyHandlerDown = ({ shiftKey }: { shiftKey: boolean }) => {
+    if (shiftKey) {
+      setSnapGrid(true);
+    }
+  };
+
+  const keyHandlerUp = ({ shiftKey }: { shiftKey: boolean }) => {
+    if (!shiftKey) {
+      setSnapGrid(false);
     }
   };
 
@@ -67,7 +81,12 @@ export default function WhiteBoard() {
 
   return (
     <OverflowWrapper>
-      <div className="flex bg-gray-300 min-h-screen min-w-3/4 place-self-center">
+      <div
+        className="flex bg-gray-300 min-h-screen min-w-3/4 place-self-center"
+        tabIndex={-1}
+        onKeyDown={keyHandlerDown}
+        onKeyUp={keyHandlerUp}
+      >
         <div className="flex flex-col">
           {Object.keys(Widgets).map((widgetName: string) => {
             return (
@@ -80,13 +99,16 @@ export default function WhiteBoard() {
               </button>
             );
           })}
+          <p>Is shift key held? {doSnapGrid? "Yes" : "No"}</p>
         </div>
         <DndContext
           sensors={sensors}
-          modifiers={[restrictToWhiteBoard]}
-          onDragStart={(event: DragStartEvent) => setActiveId(event.active.id)}
-          onDragEnd={(event) => {
-            setDropAnim(event.over && event.over.id != activeId ? true : false);
+          modifiers={
+            doSnapGrid ? [restrictToWhiteBoard, snapToGrid] : [restrictToWhiteBoard]
+          }
+          onDragStart={({ active }) => setActiveId(active.id)}
+          onDragEnd={({ over }) => {
+            setDropAnim(over && over.id != activeId ? true : false);
             setActiveId(null);
           }}
         >
