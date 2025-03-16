@@ -7,17 +7,16 @@ import {
   useDroppable,
 } from "@dnd-kit/core";
 
-import { Axis, Draggable } from "../lib/BaseWidgetStuff";
+import { Draggable } from "lib/BaseWidgetStuff";
 import { Coordinates, DragEndEvent } from "@dnd-kit/core/dist/types";
 import { useState, useRef, useCallback } from "react";
 
 interface WidgetBaseProps {
   id: string | number;
-  label: string;
   handle?: boolean;
   style?: React.CSSProperties;
+  className?: string;
   buttonStyle?: React.CSSProperties;
-  axis?: Axis;
   top?: number;
   left?: number;
   children?: React.ReactNode;
@@ -27,13 +26,11 @@ export type { WidgetBaseProps };
 
 export default function WidgetBase({
   id,
-  axis,
-  label,
   style,
+  className,
   top,
   left,
   handle,
-  buttonStyle,
   children,
 }: WidgetBaseProps) {
   const {
@@ -50,13 +47,7 @@ export default function WidgetBase({
     id: id,
   });
 
-  const combinedButtonStyle = {
-    ...buttonStyle,
-    border:
-      isDragging && over !== null && over.id != id
-        ? "2px solid red"
-        : buttonStyle?.border,
-  };
+  const borderStyle = (isDragging && over !== null && over.id != id)? " outline outline-2 outline-red-500" : "";
 
   const combinedRef = (node: HTMLElement | null) => {
     setDraggableRef(node);
@@ -69,7 +60,7 @@ export default function WidgetBase({
 
   useDndMonitor({
     onDragEnd({ delta, over, active }) {
-      if ((!over || over.id == id) && active.id === id) {
+      if (active.id === id && (!over || over.id == id)) {
         setCoordinates(({ x, y }) => {
           return {
             x: x + delta.x,
@@ -86,12 +77,10 @@ export default function WidgetBase({
       ref={combinedRef}
       dragging={isDragging}
       handle={handle}
-      label={label}
       listeners={listeners}
       style={{ ...style, left: `${x}px`, top: `${y}px` }}
-      buttonStyle={combinedButtonStyle}
+      className={className + borderStyle}
       transform={transform}
-      axis={axis}
       {...attributes}
     >
       {children}
@@ -99,9 +88,44 @@ export default function WidgetBase({
   );
 }
 
-export function WidgetBaseVisualCue(props: WidgetBaseProps) {
-  const { attributes, isDragging, listeners, node, setNodeRef, transform } =
-    useDraggable({ id: "draggable" });
+export function WidgetBaseVisualCue({
+  id,
+  style,
+  top,
+  left,
+  handle,
+  buttonStyle,
+  children,
+}: WidgetBaseProps) {
+  const {
+    attributes,
+    isDragging,
+    listeners,
+    node,
+    setNodeRef: setDraggableRef,
+    transform,
+  } = useDraggable({ id: "draggable" });
+
+  const { over, setNodeRef: setDroppableRef } = useDroppable({
+    id: id,
+  });
+
+  // const borderCollisionStyle = {
+  //   border:
+  //     isDragging && over !== null && over.id != id
+  //       ? "2px solid red"
+  //       : buttonStyle?.border,
+  // };
+
+  const borderCollisionStyle = ""
+
+  const combinedRef = (node: HTMLElement | null) => {
+    setDraggableRef(node);
+    setDroppableRef(node);
+  };
+
+  const defaultCoordinates = top && left ? { x: left, y: top } : { x: 0, y: 0 };
+  const [{ x, y }, setCoordinates] = useState<Coordinates>(defaultCoordinates);
 
   const [isPending, setIsPending] = useState(false);
   const [pendingDelayMs, setPendingDelay] = useState(0);
@@ -151,13 +175,8 @@ export function WidgetBaseVisualCue(props: WidgetBaseProps) {
   );
 
   const handlePendingEnd = useCallback(() => setIsPending(false), []);
-
-  const defaultCoordinates =
-    props.top && props.left ? { x: props.left, y: props.top } : { x: 0, y: 0 };
-  const [{ x, y }, setCoordinates] = useState<Coordinates>(defaultCoordinates);
-
-  const handleTransformEnd = (event: DragEndEvent) => {
-    if (event.active.id === props.id) {
+  const handleDragEnd = (event: DragEndEvent) => {
+    if (event.active.id === id) {
       setCoordinates(({ x, y }) => {
         return {
           x: x + event.delta.x,
@@ -167,11 +186,16 @@ export function WidgetBaseVisualCue(props: WidgetBaseProps) {
     }
   };
 
+  const combinedEndCallback = (event: DragEndEvent) => {
+    handlePendingEnd();
+    handleDragEnd(event);
+  };
+
   useDndMonitor({
     onDragPending: handlePending,
     onDragAbort: handlePendingEnd,
     onDragCancel: handlePendingEnd,
-    onDragEnd: handlePendingEnd,
+    onDragEnd: combinedEndCallback,
   });
 
   const pendingStyle: React.CSSProperties = isPending
@@ -181,16 +205,18 @@ export function WidgetBaseVisualCue(props: WidgetBaseProps) {
   return (
     <>
       <Draggable
-        ref={setNodeRef}
+        ref={combinedRef}
         dragging={isDragging}
-        handle={props.handle}
-        label={props.label}
+        handle={handle}
         listeners={listeners}
-        style={{ ...props.style, top: props.top, left: props.left }}
-        buttonStyle={{ ...props.buttonStyle, ...pendingStyle }}
+        style={{ ...style, left: `${x}px`, top: `${y}px` }}
+        buttonStyle={{
+          ...buttonStyle,
+          ...pendingStyle,
+          ...borderCollisionStyle,
+        }}
         isPendingDelay={isPending && pendingDelayMs > 0}
         transform={transform}
-        axis={props.axis}
         {...attributes}
       >
         {isPending && !isDragging && distanceCue && (
@@ -208,6 +234,7 @@ export function WidgetBaseVisualCue(props: WidgetBaseProps) {
             }}
           ></div>
         )}
+        {children}
       </Draggable>
     </>
   );

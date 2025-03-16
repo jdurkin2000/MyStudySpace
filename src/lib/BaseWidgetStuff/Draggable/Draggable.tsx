@@ -5,59 +5,46 @@ import type {Transform} from '@dnd-kit/utilities';
 
 import {Handle} from '../Item/components/Handle';
 
-import {
-  draggable,
-  draggableHorizontal,
-  draggableVertical,
-} from './draggable-svg';
 import styles from './Draggable.module.css';
 
-export enum Axis {
-  All,
-  Vertical,
-  Horizontal,
-}
-
 interface Props {
-  axis?: Axis;
   dragOverlay?: boolean;
   dragging?: boolean;
   handle?: boolean;
-  label?: string;
   listeners?: DraggableSyntheticListeners;
   style?: React.CSSProperties;
-  buttonStyle?: React.CSSProperties;
+  className?: string;
   transform?: Transform | null;
   isPendingDelay?: boolean;
   children?: React.ReactNode;
 }
 
-export const Draggable = forwardRef<HTMLButtonElement, Props>(
+export const Draggable = forwardRef<HTMLDivElement, Props>(
   function Draggable(
     {
-      axis,
       dragOverlay,
       dragging,
       handle,
-      label,
       listeners,
       transform,
       style,
-      buttonStyle,
+      className,
       isPendingDelay = false,
-      ...props
+      children
     },
     ref
   ) {
     return (
       <div
+        aria-label="Draggable"
+        data-cypress="draggable-item"
         className={classNames(
           styles.Draggable,
           dragOverlay && styles.dragOverlay,
           dragging && styles.dragging,
           handle && styles.handle,
           isPendingDelay && styles.pendingDelay
-        )}
+        ) + " " + className}
         style={
           {
             ...style,
@@ -65,25 +52,12 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
             '--translate-y': `${transform?.y ?? 0}px`,
           } as React.CSSProperties
         }
+        {...(handle ? {} : listeners)}
+        tabIndex={handle ? -1 : undefined}
+        ref={ref}
       >
-        <button
-          {...props}
-          aria-label="Draggable"
-          data-cypress="draggable-item"
-          {...(handle ? {} : listeners)}
-          tabIndex={handle ? -1 : undefined}
-          ref={ref}
-          style={buttonStyle}
-        >
-          {/* {axis === Axis.Vertical
-            ? draggableVertical
-            : axis === Axis.Horizontal
-            ? draggableHorizontal
-            : draggable} */}
-          {handle ? <Handle {...(handle ? listeners : {})} /> : null}
-          {props.children}
-        </button>
-        {/* {label ? <label>{label}</label> : null} */}
+        {handle ? <Handle {...(handle ? listeners : {})} /> : null}
+        {children}
       </div>
     );
   }

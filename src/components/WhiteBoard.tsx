@@ -1,6 +1,6 @@
 "use client";
 
-import React, { CSSProperties, ReactElement, useRef, useState } from "react";
+import React, {  ReactElement, useRef, useState } from "react";
 
 import {
   DndContext,
@@ -8,8 +8,6 @@ import {
   MouseSensor,
   TouchSensor,
   KeyboardSensor,
-  PointerActivationConstraint,
-  Modifiers,
   useSensors,
   Modifier,
   DragOverlay,
@@ -18,42 +16,21 @@ import {
   UniqueIdentifier,
 } from "@dnd-kit/core";
 
-import { Axis, OverflowWrapper } from "../lib/BaseWidgetStuff";
+import { OverflowWrapper } from "lib/BaseWidgetStuff";
 
-import WidgetBase from "./WidgetBase";
+import WidgetBase from "components/WidgetBase";
 import { restrictToBoundingRect } from "@dnd-kit/modifiers";
-import ExampleWidget from "./widget-components/ExampleWidget";
-
-interface Props {
-  activationConstraint?: PointerActivationConstraint;
-  axis?: Axis;
-  handle?: boolean;
-  modifiers?: Modifiers;
-  buttonStyle?: CSSProperties;
-  style?: CSSProperties;
-  showConstraintCue?: boolean;
-}
+import * as Widgets from "components/widget-components";
 
 let nextId = 0;
 
-export default function WhiteBoard({
-  activationConstraint,
-  axis,
-  handle,
-  style,
-  buttonStyle,
-}: //showConstraintCue,
-Props) {
+export default function WhiteBoard() {
   const [widgets, addWidget] = useState<ReactElement<typeof WidgetBase>[]>([]);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-  const [doDropAnim, setDropAnim] = useState<boolean>(false)
+  const [doDropAnim, setDropAnim] = useState<boolean>(false);
 
-  const mouseSensor = useSensor(MouseSensor, {
-    activationConstraint,
-  });
-  const touchSensor = useSensor(TouchSensor, {
-    activationConstraint,
-  });
+  const mouseSensor = useSensor(MouseSensor, {});
+  const touchSensor = useSensor(TouchSensor, {});
   const keyboardSensor = useSensor(KeyboardSensor, {});
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
 
@@ -69,52 +46,57 @@ Props) {
     );
   };
 
-  const clickHandler = () => {
-    addWidget([
-      ...widgets,
-      <WidgetBase
-        key={nextId++}
-        id={nextId}
-        label="Test Widget"
-        axis={axis}
-        handle={handle}
-        style={style}
-        buttonStyle={buttonStyle}
-      ><ExampleWidget/></WidgetBase>,
-    ]);
+  const clickHandler = (widgetName: string) => {
+    const widget = Object.entries(Widgets).find(([key]) => key == widgetName);
+
+    if (widget) {
+      const [, WidgetComponent] = widget;
+
+      if (typeof WidgetComponent === "function") {
+        const currId = nextId++
+      
+        addWidget([...widgets, <WidgetComponent key={currId} id={currId} />]);
+      }
+    }
   };
 
   const defaultDropAnim: DropAnimation = {
     duration: 250,
-    easing: 'ease',
-  }
+    easing: "ease",
+  };
 
   return (
     <OverflowWrapper>
-      <div className="flex bg-gray-300 border-2 justify-center min-h-screen">
-        <button className="bg-amber-700" onClick={clickHandler}>
-          Add
-        </button>
+      <div className="flex bg-gray-300 min-h-screen min-w-3/4 place-self-center">
+        <div className="flex flex-col">
+          {Object.keys(Widgets).map((widgetName: string) => {
+            return (
+              <button
+                key={widgetName}
+                className="bg-amber-700 max-h-8 border-b-1"
+                onClick={() => clickHandler(widgetName)}
+              >
+                <p>Add {widgetName}</p>
+              </button>
+            );
+          })}
+        </div>
         <DndContext
           sensors={sensors}
           modifiers={[restrictToWhiteBoard]}
-          onDragStart={(event: DragStartEvent) =>
-            setActiveId(event.active.id)
-          }
+          onDragStart={(event: DragStartEvent) => setActiveId(event.active.id)}
           onDragEnd={(event) => {
-            setDropAnim((event.over && event.over.id != activeId)? true : false)
-            setActiveId(null)
+            setDropAnim(event.over && event.over.id != activeId ? true : false);
+            setActiveId(null);
           }}
         >
-          <div ref={wrapperRef} className="bg-lime-400 min-w-2xl">
+          <div ref={wrapperRef} className="bg-lime-400 flex-grow border-2">
             {widgets}
           </div>
 
-          <DragOverlay dropAnimation={doDropAnim? defaultDropAnim: null}>
-            {activeId !== null ?
-                widgets.find(
-                  (item: ReactElement) => item.key == activeId
-                )
+          <DragOverlay dropAnimation={doDropAnim ? defaultDropAnim : null}>
+            {activeId !== null
+              ? widgets.find((item: ReactElement) => item.key == activeId)
               : null}
           </DragOverlay>
         </DndContext>

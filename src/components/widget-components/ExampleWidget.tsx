@@ -1,13 +1,19 @@
-import { Wrapper } from "@/src/lib/BaseWidgetStuff"
 import Image from "next/image"
+import WidgetBase, { WidgetBaseProps } from "components/WidgetBase"
 
-export default function ExampleWidget() {
-
+/* --IMPORTANT-- make sure your component function is *not* default, and add the export line for 
+this component function with braces in the index.ts file within this folder*/
+export function ExampleWidget(props: WidgetBaseProps) {
 
     return (
-        <div className="flex items-center flex-col bg-white max-w-50 max-h-auto">
-            <Image src="/what_algorithms_does_to_a_man.jpg" alt="Maulik my beloved" width={50} height={50}/>
-            <p>Sadness is not the enemy, but the poet whispering truths we dare not face in the light.</p>
-        </div>
+        // Also must pass in props like below in order for widget to be rendered correctly
+        <WidgetBase className="bg-white px-4 py-2 rounded-md" {...props}>
+            <Image 
+                src="clock.svg"
+                alt="clock"
+                width={100}
+                height={100}
+            />
+        </WidgetBase>
     )
 }
