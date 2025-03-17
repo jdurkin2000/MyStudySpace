@@ -1,10 +1,9 @@
-import React, {forwardRef} from 'react';
+import React, { forwardRef } from 'react';
 import classNames from 'classnames';
-import type {DraggableSyntheticListeners} from '@dnd-kit/core';
-import type {Transform} from '@dnd-kit/utilities';
+import type { DraggableSyntheticListeners } from '@dnd-kit/core';
+import type { Transform } from '@dnd-kit/utilities';
 
-import {Handle} from '../Item/components/Handle';
-
+import { Handle } from '../Item/components/Handle';
 import styles from './Draggable.module.css';
 
 interface Props {
@@ -34,6 +33,9 @@ export const Draggable = forwardRef<HTMLDivElement, Props>(
     },
     ref
   ) {
+    const urlMatch = className?.match(/url\(["']?([^"']*)["']?\)/);
+    const url: string | null = urlMatch ? urlMatch[1] : null;
+
     return (
       <div
         aria-label="Draggable"
@@ -50,6 +52,7 @@ export const Draggable = forwardRef<HTMLDivElement, Props>(
             ...style,
             '--translate-x': `${transform?.x ?? 0}px`,
             '--translate-y': `${transform?.y ?? 0}px`,
+            '--existing-background': url ? `url(${url})` : 'none'
           } as React.CSSProperties
         }
         {...(handle ? {} : listeners)}

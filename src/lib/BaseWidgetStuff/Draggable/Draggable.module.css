@@ -6,11 +6,6 @@
 
 .Draggable {
   position: relative;
-  display: flex;
-  align-items: center;
-  align-self: center;
-  flex-direction: column;
-  justify-content: center;
   width: fit-content;
   transition: transform 250ms ease;
 
@@ -19,18 +14,17 @@
   box-shadow: var(--box-shadow);
   transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0) scale(var(--scale, 1));
   transition: box-shadow 300ms ease;
-  
 
   &.pendingDelay {
-    animation: pending linear;
-    background-image: linear-gradient(90deg,
-        #f00d calc(var(--progress)* 1%),
-        transparent calc(var(--progress)* 1% + 1%));
+    animation: pending 1s linear forwards; /* Adjust the duration and ensure it runs forwards */
+    background-image: 
+      linear-gradient(90deg, rgba(255, 0, 0, 0.422) calc(var(--progress) * 1%), transparent calc(var(--progress) * 1% + 0.1%)),
+      var(--existing-background, none); /* Use a CSS variable for the existing background */
   }
 
   &:not(.handle) {
     touch-action: none;
-    cursor:grab;
+    cursor: grab;
 
     &:focus-visible:not(.active &) {
       box-shadow: 0 0 0 3px #4c9ffe;
@@ -52,16 +46,15 @@
   &.dragging {
     z-index: 9999;
     transition: none;
-    cursor:grabbing;
-    
+    cursor: grabbing;
+
     --scale: 1.06;
     --box-shadow: -1px 0 15px 0 rgba(34, 33, 81, 0.01),
-    0px 15px 15px 0 rgba(34, 33, 81, 0.25);
+      0px 15px 15px 0 rgba(34, 33, 81, 0.25);
 
     &:focus-visible {
       --box-shadow: 0 0px 10px 2px #4c9ffe;
     }
-
   }
 
   &.dragOverlay,
@@ -92,6 +85,9 @@
 }
 
 @keyframes pending {
+  0% {
+    --progress: 0;
+  }
   100% {
     --progress: 100;
   }

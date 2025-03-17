@@ -16,7 +16,6 @@ interface WidgetBaseProps {
   handle?: boolean;
   style?: React.CSSProperties;
   className?: string;
-  buttonStyle?: React.CSSProperties;
   top?: number;
   left?: number;
   children?: React.ReactNode;
@@ -24,7 +23,7 @@ interface WidgetBaseProps {
 
 export type { WidgetBaseProps };
 
-export default function WidgetBase({
+export function WidgetBase({
   id,
   style,
   className,
@@ -44,10 +43,13 @@ export default function WidgetBase({
   });
 
   const { over, setNodeRef: setDroppableRef } = useDroppable({
-    id: id,
+    id: id
   });
 
-  const borderStyle = (isDragging && over !== null && over.id != id)? " outline outline-2 outline-red-500" : "";
+  const borderStyle =
+    isDragging && over !== null && over.id != id
+      ? " outline outline-2 outline-red-500"
+      : "";
 
   const combinedRef = (node: HTMLElement | null) => {
     setDraggableRef(node);
@@ -64,12 +66,11 @@ export default function WidgetBase({
         setCoordinates(({ x, y }) => {
           return {
             x: x + delta.x,
-            y: y + delta.y,
+            y: y + delta.y
           };
         });
-      } else {
       }
-    },
+    }
   });
 
   return (
@@ -88,13 +89,13 @@ export default function WidgetBase({
   );
 }
 
-export function WidgetBaseVisualCue({
+export default function WidgetBaseVisualCue({
   id,
   style,
+  className,
   top,
   left,
   handle,
-  buttonStyle,
   children,
 }: WidgetBaseProps) {
   const {
@@ -104,20 +105,16 @@ export function WidgetBaseVisualCue({
     node,
     setNodeRef: setDraggableRef,
     transform,
-  } = useDraggable({ id: "draggable" });
+  } = useDraggable({ id: id });
 
   const { over, setNodeRef: setDroppableRef } = useDroppable({
     id: id,
   });
 
-  // const borderCollisionStyle = {
-  //   border:
-  //     isDragging && over !== null && over.id != id
-  //       ? "2px solid red"
-  //       : buttonStyle?.border,
-  // };
-
-  const borderCollisionStyle = ""
+  const borderStyle =
+    isDragging && over !== null && over.id != id
+      ? " outline outline-2 outline-red-500"
+      : "";
 
   const combinedRef = (node: HTMLElement | null) => {
     setDraggableRef(node);
@@ -136,6 +133,7 @@ export function WidgetBaseVisualCue({
 
   const handlePending = useCallback(
     (event: DragPendingEvent) => {
+      if (event.id != id) return;
       setIsPending(true);
       const { constraint } = event;
       if ("delay" in constraint) {
@@ -171,16 +169,16 @@ export function WidgetBaseVisualCue({
         style.setProperty("opacity", `${0.25 + ratio * 0.75}`);
       }
     },
-    [node]
+    [node, id]
   );
 
   const handlePendingEnd = useCallback(() => setIsPending(false), []);
   const handleDragEnd = (event: DragEndEvent) => {
-    if (event.active.id === id) {
+    if (event.active.id === id && (!event.over || event.over.id == id)) {
       setCoordinates(({ x, y }) => {
         return {
           x: x + event.delta.x,
-          y: y + event.delta.y,
+          y: y + event.delta.y
         };
       });
     }
@@ -209,12 +207,8 @@ export function WidgetBaseVisualCue({
         dragging={isDragging}
         handle={handle}
         listeners={listeners}
-        style={{ ...style, left: `${x}px`, top: `${y}px` }}
-        buttonStyle={{
-          ...buttonStyle,
-          ...pendingStyle,
-          ...borderCollisionStyle,
-        }}
+        style={{ ...style, ...pendingStyle, left: `${x}px`, top: `${y}px` }}
+        className={className + borderStyle}
         isPendingDelay={isPending && pendingDelayMs > 0}
         transform={transform}
         {...attributes}

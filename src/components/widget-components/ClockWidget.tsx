@@ -24,22 +24,22 @@ export function ClockWidget(props: WidgetBaseProps) {
 
   return (
     <WidgetBase
-      className="bg-[url('/oceansky.jpg')] bg-cover px-4 py-2 rounded-md text-blue-50"
+      className="flex flex-col items-center bg-[url('/oceansky.jpg')] bg-cover px-4 py-2 rounded-md text-blue-50"
       {...props}
     >
-        <h1 className="text-3xl">
-          {time.toLocaleTimeString(undefined, {
-            hour: "numeric",
-            minute: "2-digit",
-          })}
-        </h1>
-        <h2>
-          {time.toLocaleDateString(undefined, {
-            weekday: "long",
-            month: "long",
-            day: "numeric",
-          })}
-        </h2>
+      <h1 className="text-3xl">
+        {time.toLocaleTimeString(undefined, {
+          hour: "numeric",
+          minute: "2-digit",
+        })}
+      </h1>
+      <h2>
+        {time.toLocaleDateString(undefined, {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+        })}
+      </h2>
     </WidgetBase>
   );
 }

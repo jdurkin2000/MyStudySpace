@@ -30,8 +30,17 @@ export default function WhiteBoard() {
   const [doDropAnim, setDropAnim] = useState<boolean>(false);
   const [doSnapGrid, setSnapGrid] = useState<boolean>(false);
 
-  const mouseSensor = useSensor(MouseSensor, {});
-  const touchSensor = useSensor(TouchSensor, {});
+  const delayConstraint = {
+    delay: 250,
+    tolerance: 5
+  }
+
+  const mouseSensor = useSensor(MouseSensor, {  
+    activationConstraint: delayConstraint
+  });
+  const touchSensor = useSensor(TouchSensor, {
+    activationConstraint: delayConstraint
+  });
   const keyboardSensor = useSensor(KeyboardSensor, {});
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
 
@@ -82,7 +91,7 @@ export default function WhiteBoard() {
   return (
     <OverflowWrapper>
       <div
-        className="flex bg-gray-300 min-h-screen min-w-3/4 place-self-center"
+        className="flex bg-gray-300 min-h-screen min-w-3/4 place-self-center shadow-[inset_0_4px_4px_rgba(0,0,0,0.8)]"
         tabIndex={-1}
         onKeyDown={keyHandlerDown}
         onKeyUp={keyHandlerUp}
@@ -99,7 +108,6 @@ export default function WhiteBoard() {
               </button>
             );
           })}
-          <p>Is shift key held? {doSnapGrid? "Yes" : "No"}</p>
         </div>
         <DndContext
           sensors={sensors}
