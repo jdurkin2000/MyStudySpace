@@ -12,6 +12,7 @@ interface Props {
   handle?: boolean;
   listeners?: DraggableSyntheticListeners;
   style?: React.CSSProperties;
+  glassy?: boolean;
   className?: string;
   transform?: Transform | null;
   isPendingDelay?: boolean;
@@ -27,6 +28,7 @@ export const Draggable = forwardRef<HTMLDivElement, Props>(
       listeners,
       transform,
       style,
+      glassy,
       className,
       isPendingDelay = false,
       children
@@ -45,7 +47,8 @@ export const Draggable = forwardRef<HTMLDivElement, Props>(
           dragOverlay && styles.dragOverlay,
           dragging && styles.dragging,
           handle && styles.handle,
-          isPendingDelay && styles.pendingDelay
+          isPendingDelay && styles.pendingDelay,
+          glassy && styles.glassy
         ) + " " + className}
         style={
           {

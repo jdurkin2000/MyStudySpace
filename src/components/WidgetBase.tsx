@@ -15,6 +15,7 @@ interface WidgetBaseProps {
   id: string | number;
   handle?: boolean;
   style?: React.CSSProperties;
+  glassy?: boolean
   className?: string;
   top?: number;
   left?: number;
@@ -26,6 +27,7 @@ export type { WidgetBaseProps };
 export function WidgetBase({
   id,
   style,
+  glassy,
   className,
   top,
   left,
@@ -80,6 +82,7 @@ export function WidgetBase({
       handle={handle}
       listeners={listeners}
       style={{ ...style, left: `${x}px`, top: `${y}px` }}
+      glassy = {glassy}
       className={className + borderStyle}
       transform={transform}
       {...attributes}
@@ -92,6 +95,7 @@ export function WidgetBase({
 export default function WidgetBaseVisualCue({
   id,
   style,
+  glassy,
   className,
   top,
   left,
@@ -208,6 +212,7 @@ export default function WidgetBaseVisualCue({
         handle={handle}
         listeners={listeners}
         style={{ ...style, ...pendingStyle, left: `${x}px`, top: `${y}px` }}
+        glassy={glassy}
         className={className + borderStyle}
         isPendingDelay={isPending && pendingDelayMs > 0}
         transform={transform}

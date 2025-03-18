@@ -32,14 +32,14 @@ export default function WhiteBoard() {
 
   const delayConstraint = {
     delay: 250,
-    tolerance: 5
-  }
+    tolerance: 5,
+  };
 
-  const mouseSensor = useSensor(MouseSensor, {  
-    activationConstraint: delayConstraint
+  const mouseSensor = useSensor(MouseSensor, {
+    activationConstraint: delayConstraint,
   });
   const touchSensor = useSensor(TouchSensor, {
-    activationConstraint: delayConstraint
+    activationConstraint: delayConstraint,
   });
   const keyboardSensor = useSensor(KeyboardSensor, {});
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
@@ -112,7 +112,9 @@ export default function WhiteBoard() {
         <DndContext
           sensors={sensors}
           modifiers={
-            doSnapGrid ? [restrictToWhiteBoard, snapToGrid] : [restrictToWhiteBoard]
+            doSnapGrid
+              ? [restrictToWhiteBoard, snapToGrid]
+              : [restrictToWhiteBoard]
           }
           onDragStart={({ active }) => setActiveId(active.id)}
           onDragEnd={({ over }) => {

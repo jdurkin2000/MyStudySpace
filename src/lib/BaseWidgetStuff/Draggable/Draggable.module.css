@@ -15,11 +15,37 @@
   transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0) scale(var(--scale, 1));
   transition: box-shadow 300ms ease;
 
+  &.glassy {
+    /* Glass Effect */
+    background:
+      linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)),
+      /* Transparent frosted look */
+      var(--existing-background, none);
+    /* Background image layer */
+    backdrop-filter: blur(12px) brightness(1.2);
+    /* Glass effect */
+    border: 2px outset rgba(255, 255, 255, 0.3);
+    /* Glass border */
+
+    /* Neumorphic Raised Effect */
+    box-shadow:
+      var(--box-shadow),
+      /* Dark outer shadow for depth */
+      -8px -8px 16px rgba(255, 255, 255, 0.1),
+      /* Light outer shadow for raised effect */
+      inset 0 4px 8px rgba(255, 255, 255, 0.3),
+      /* Inner glow for glass edges */
+      inset 0 -4px 8px rgba(0, 0, 0, 0.2);
+    /* Inner shadow for depth */
+  }
+
   &.pendingDelay {
-    animation: pending 1s linear forwards; /* Adjust the duration and ensure it runs forwards */
-    background-image: 
+    animation: pending 1s ease-in forwards;
+    /* Adjust the duration and ensure it runs forwards */
+    /* background-image:
       linear-gradient(90deg, rgba(255, 0, 0, 0.422) calc(var(--progress) * 1%), transparent calc(var(--progress) * 1% + 0.1%)),
-      var(--existing-background, none); /* Use a CSS variable for the existing background */
+      var(--existing-background, none); */
+    /* Use a CSS variable for the existing background */
   }
 
   &:not(.handle) {
@@ -86,9 +112,11 @@
 
 @keyframes pending {
   0% {
-    --progress: 0;
+    scale: 100%;
   }
+
   100% {
-    --progress: 100;
+    scale: 75%;
+    animation-timing-function: cubic-bezier(0.42, 0, 1, 1); /* Slow shrink */
   }
 }
