@@ -24,7 +24,7 @@ interface WidgetBaseProps {
 
 export type { WidgetBaseProps };
 
-export default function WidgetBase({
+export function WidgetBase({
   id,
   style,
   glassy,
@@ -92,7 +92,7 @@ export default function WidgetBase({
   );
 }
 
-export function WidgetBaseVisualCue({
+export default function WidgetBaseVisualCue({
   id,
   style,
   glassy,

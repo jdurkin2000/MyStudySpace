@@ -24,3 +24,15 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@layer utilities {
+  .glassy {
+    backdrop-filter: blur(12px) brightness(1.2); /* Glass effect */
+    border: 2px outset rgba(255, 255, 255, 0.3); /* Glass border */
+    box-shadow:
+      1px 2px 16px rgba(0, 0, 0, 0.2),
+      -8px -8px 16px rgba(255, 255, 255, 0.2), /* Light outer shadow for raised effect */
+      inset 0 4px 8px rgba(255, 255, 255, 0.3), /* Inner glow for glass edges */
+      inset 0 -4px 8px rgba(0, 0, 0, 0.2); /* Inner shadow for depth */
+  }
+}
