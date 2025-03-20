@@ -31,8 +31,8 @@ export default function WhiteBoard() {
   const [doSnapGrid, setSnapGrid] = useState<boolean>(false);
 
   const delayConstraint = {
-    delay: 250,
-    tolerance: 5,
+    delay: 400,
+    tolerance: 10
   };
 
   const mouseSensor = useSensor(MouseSensor, {

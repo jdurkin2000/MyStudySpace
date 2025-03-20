@@ -40,15 +40,18 @@ export function ClockWidget(props: WidgetBaseProps) {
     <WidgetBase
       className="
         flex flex-col select-none items-center text-center justify-center rounded-md text-white"
-      glassy={false}
       {...props}
     >
-      <div className="bg-[url('/oceansky.jpg')] px-4 py-2 rounded-md glassy"
-           style={{
-            animation: "scrollBackground 100s linear infinite",
-            backgroundSize: "200% 500%",
-            backgroundPositionY: "25%",
-          }}>
+      <div
+        className="px-4 py-2 rounded-md glassy"
+        style={{
+          background:
+            "linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)), url('/oceansky.jpg')",
+          animation: "scrollBackground 100s linear infinite",
+          backgroundSize: "200% 500%",
+          backgroundPositionY: "25%",
+        }}
+      >
         <style>{scrollBackgroundKeyframes}</style>
         <h1 className="text-3xl">
           {time.toLocaleTimeString(undefined, {

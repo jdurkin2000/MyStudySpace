@@ -6,13 +6,12 @@ import type { Transform } from '@dnd-kit/utilities';
 import { Handle } from '../Item/components/Handle';
 import styles from './Draggable.module.css';
 
-interface Props {
+interface Props extends React.HTMLAttributes<HTMLDivElement>{
   dragOverlay?: boolean;
   dragging?: boolean;
   handle?: boolean;
   listeners?: DraggableSyntheticListeners;
   style?: React.CSSProperties;
-  glassy?: boolean;
   className?: string;
   transform?: Transform | null;
   isPendingDelay?: boolean;
@@ -28,10 +27,10 @@ export const Draggable = forwardRef<HTMLDivElement, Props>(
       listeners,
       transform,
       style,
-      glassy,
       className,
       isPendingDelay = false,
-      children
+      children,
+      ...props
     },
     ref
   ) {
@@ -47,8 +46,7 @@ export const Draggable = forwardRef<HTMLDivElement, Props>(
           dragOverlay && styles.dragOverlay,
           dragging && styles.dragging,
           handle && styles.handle,
-          isPendingDelay && styles.pendingDelay,
-          glassy && styles.glassy
+          isPendingDelay && styles.pendingDelay
         ) + " " + className}
         style={
           {
@@ -61,6 +59,7 @@ export const Draggable = forwardRef<HTMLDivElement, Props>(
         {...(handle ? {} : listeners)}
         tabIndex={handle ? -1 : undefined}
         ref={ref}
+        {...props}
       >
         {handle ? <Handle {...(handle ? listeners : {})} /> : null}
         {children}
