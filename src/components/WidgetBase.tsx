@@ -9,13 +9,12 @@ import {
 
 import { Draggable } from "lib/BaseWidgetStuff";
 import { Coordinates, DragEndEvent } from "@dnd-kit/core/dist/types";
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback, HTMLAttributes } from "react";
 
-interface WidgetBaseProps {
+interface WidgetBaseProps extends Omit<HTMLAttributes<HTMLDivElement>, "id">{
   id: string | number;
   handle?: boolean;
   style?: React.CSSProperties;
-  glassy?: boolean
   className?: string;
   top?: number;
   left?: number;
@@ -27,7 +26,6 @@ export type { WidgetBaseProps };
 export function WidgetBase({
   id,
   style,
-  glassy,
   className,
   top,
   left,
@@ -82,7 +80,6 @@ export function WidgetBase({
       handle={handle}
       listeners={listeners}
       style={{ ...style, left: `${x}px`, top: `${y}px` }}
-      glassy = {glassy}
       className={className + borderStyle}
       transform={transform}
       {...attributes}
@@ -95,7 +92,6 @@ export function WidgetBase({
 export default function WidgetBaseVisualCue({
   id,
   style,
-  glassy,
   className,
   top,
   left,
@@ -106,7 +102,6 @@ export default function WidgetBaseVisualCue({
     attributes,
     isDragging,
     listeners,
-    node,
     setNodeRef: setDraggableRef,
     transform,
   } = useDraggable({ id: id });
@@ -130,10 +125,6 @@ export default function WidgetBaseVisualCue({
 
   const [isPending, setIsPending] = useState(false);
   const [pendingDelayMs, setPendingDelay] = useState(0);
-  const [distanceCue, setDistanceCue] = useState<
-    (Coordinates & { size: number }) | null
-  >(null);
-  const distanceCueRef = useRef<HTMLDivElement>(null);
 
   const handlePending = useCallback(
     (event: DragPendingEvent) => {
@@ -143,37 +134,8 @@ export default function WidgetBaseVisualCue({
       if ("delay" in constraint) {
         setPendingDelay(constraint.delay);
       }
-      if ("distance" in constraint && typeof constraint.distance === "number") {
-        const { distance } = constraint;
-        if (event.offset === undefined && node.current !== null) {
-          // Infer the position of the pointer relative to the element.
-          // Only do this once at the start, as the offset is defined
-          // when the pointer moves.
-          const { x: rx, y: ry } = node.current.getBoundingClientRect();
-          setDistanceCue({
-            x: event.initialCoordinates.x - rx - distance,
-            y: event.initialCoordinates.y - ry - distance,
-            size: distance * 2,
-          });
-        }
-        if (distanceCueRef.current === null) {
-          return;
-        }
-        const { x, y } = event.offset ?? { x: 0, y: 0 };
-        const length = Math.sqrt(x * x + y * y);
-        const ratio = length / Math.max(distance, 1);
-        const fanAngle = 360 * (1 - ratio);
-        const rotation = Math.atan2(y, x) * (180 / Math.PI) - 90 - fanAngle / 2;
-        const { style } = distanceCueRef.current;
-        style.setProperty(
-          "background-image",
-          `conic-gradient(red ${fanAngle}deg, transparent 0deg)`
-        );
-        style.setProperty("rotate", `${rotation}deg`);
-        style.setProperty("opacity", `${0.25 + ratio * 0.75}`);
-      }
     },
-    [node, id]
+    [id]
   );
 
   const handlePendingEnd = useCallback(() => setIsPending(false), []);
@@ -212,27 +174,11 @@ export default function WidgetBaseVisualCue({
         handle={handle}
         listeners={listeners}
         style={{ ...style, ...pendingStyle, left: `${x}px`, top: `${y}px` }}
-        glassy={glassy}
         className={className + borderStyle}
         isPendingDelay={isPending && pendingDelayMs > 0}
         transform={transform}
         {...attributes}
       >
-        {isPending && !isDragging && distanceCue && (
-          <div
-            ref={distanceCueRef}
-            style={{
-              borderRadius: "50%",
-              position: "absolute",
-              backgroundImage: "conic-gradient(red 360deg, transparent 0deg)",
-              opacity: 0.25,
-              width: distanceCue.size,
-              height: distanceCue.size,
-              left: distanceCue.x,
-              top: distanceCue.y,
-            }}
-          ></div>
-        )}
         {children}
       </Draggable>
     </>
