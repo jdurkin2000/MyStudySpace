@@ -19,7 +19,7 @@ export function StickyNoteWidget(props: WidgetBaseProps) {
         <label className={`${styles.container}`}>
       
           <input type="checkbox" />
-          <span className={`${styles.checkmark}`}><i class=""></i></span>
+          <span className={`${styles.checkmark}`}></span>
         </label>
 
         <label className={`${styles.container}`}>
