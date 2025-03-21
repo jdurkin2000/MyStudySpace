@@ -25,11 +25,11 @@
         border: 2px solid rgba(245, 245, 245, 0.278);
     }
 
-    > :nth-child(2) {
+    button:first-of-type {
         background-color: rgba(255, 95, 95, 0.6);
     }
 
-    > :nth-child(2):hover {
+    button:first-of-type:hover {
         background-color: rgba(255, 153, 153, 0.6);
     }
 

@@ -27,8 +27,9 @@ export function CalculatorWidget(props: WidgetBaseProps) {
   useEffect(() => {
     if (!inputRef.current) return;
 
-    if (isOverflowing) inputRef.current.value = inputRef.current.value.slice(0, -1)
-  }, [isOverflowing])
+    if (isOverflowing)
+      inputRef.current.value = inputRef.current.value.slice(0, -1);
+  }, [isOverflowing]);
 
   const assignValue = (newVal: string, append?: boolean) => {
     if (!inputRef.current) return;
@@ -67,7 +68,7 @@ export function CalculatorWidget(props: WidgetBaseProps) {
               break;
             }
             case "Backspace": {
-              currentTarget.value = currVal.slice(0,-1);
+              currentTarget.value = currVal.slice(0, -1);
               checkOverflow();
               break;
             }
@@ -162,7 +163,7 @@ export function CalculatorWidget(props: WidgetBaseProps) {
       <button className="text-xl" onClick={() => assignValue("+", true)}>
         {"+"}
       </button>
-      <button onClick={() => assignValue("", false)}>{"AC"}</button>
+      <button onClick={() => assignValue("", false)}>{"C"}</button>
       <button onClick={() => assignValue("0", true)}>{"0"}</button>
       <button onClick={() => assignValue(".", true)}>{"."}</button>
       <button

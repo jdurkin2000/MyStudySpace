@@ -5,7 +5,7 @@
 }
 
 .Draggable {
-  position: relative;
+  position: absolute;
   width: fit-content;
   transition: transform 250ms ease;
 
@@ -14,6 +14,10 @@
   box-shadow: var(--box-shadow);
   transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0) scale(var(--scale, 1));
   transition: box-shadow 300ms ease;
+
+  &.returning {
+    animation: return 250ms ease;
+  }
 
   &.pendingDelay {
     animation: pendingShrink 1s ease-in forwards;
@@ -89,6 +93,18 @@
 
   100% {
     scale: 75%;
-    animation-timing-function: cubic-bezier(0.42, 0, 1, 1); /* Slow shrink */
+    animation-timing-function: cubic-bezier(0.42, 0, 1, 1);
+  }
+}
+
+@keyframes return {
+  from {
+    transform: translate3d(var(--delta-x, 0), var(--delta-y, 0), 0);
+    z-index: 10000;
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+    z-index: 9999;
   }
 }
