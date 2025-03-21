@@ -15,8 +15,6 @@ import {
   UniqueIdentifier,
 } from "@dnd-kit/core";
 
-import { OverflowWrapper } from "lib/BaseWidgetStuff";
-
 import WidgetBase from "components/WidgetBase";
 import { restrictToBoundingRect, createSnapModifier } from "@dnd-kit/modifiers";
 import * as Widgets from "components/widget-components";
@@ -89,9 +87,8 @@ export default function WhiteBoard() {
   };
 
   return (
-    <OverflowWrapper>
       <div
-        className="flex bg-gray-300 min-h-screen min-w-3/4 place-self-center shadow-[inset_0_4px_4px_rgba(0,0,0,0.8)]"
+        className="flex flex-grow bg-gray-300 min-w-3/4 place-self-center shadow-[inset_0_4px_4px_rgba(0,0,0,0.8)]"
         tabIndex={-1}
         onKeyDown={keyHandlerDown}
         onKeyUp={keyHandlerUp}
@@ -133,6 +130,5 @@ export default function WhiteBoard() {
           </DragOverlay>
         </DndContext>
       </div>
-    </OverflowWrapper>
   );
 }
