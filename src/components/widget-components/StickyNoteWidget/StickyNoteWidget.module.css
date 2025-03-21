@@ -10,7 +10,7 @@
     box-sizing: border-box;
     /* Include padding within dimensions */
     border-radius: 3px;
-    z-index: 0;
+    z-index: -1;
 }
 
 .textarea {
