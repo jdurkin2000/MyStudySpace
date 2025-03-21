@@ -3,6 +3,7 @@
         border: 1px solid rgba(245, 245, 245, 0.567);
         border-radius: 5px;
         overflow: hidden;
+        background-color: rgba(255, 255, 255, 0.1);
     }
 
     > :first-child:focus-visible {
@@ -22,7 +23,11 @@
 
     >*:not(:first-child):active {
         background-color: rgba(123, 198, 255, 0.57);
-        border: 2px solid rgba(245, 245, 245, 0.278);
+        border: 2px solid rgba(25, 25, 25, 0.393);
+    }
+
+    >*:not(:first-child):active >* {
+        transform: translate(1px, 1px);
     }
 
     button:first-of-type {

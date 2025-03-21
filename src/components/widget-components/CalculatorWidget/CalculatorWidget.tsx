@@ -130,34 +130,54 @@ export function CalculatorWidget(props: WidgetBaseProps) {
       <button onClick={() => assignValue("%", true)}>
         <FontAwesomeIcon icon={faPercent} className={styles.icon} />
       </button>
-      <button
-        onClick={() => assignValue("/", true)}
-      >
+      <button onClick={() => assignValue("/", true)}>
         <FontAwesomeIcon icon={faDivide} className={styles.icon} />
       </button>
-      <button onClick={() => assignValue("7", true)}>{"7"}</button>
-      <button onClick={() => assignValue("8", true)}>{"8"}</button>
-      <button onClick={() => assignValue("9", true)}>{"9"}</button>
-      <button
-        onClick={() => assignValue("*", true)}
-      >
+      <button onClick={() => assignValue("7", true)}>
+        <p>{"7"}</p>
+      </button>
+      <button onClick={() => assignValue("8", true)}>
+        <p>{"8"}</p>
+      </button>
+      <button onClick={() => assignValue("9", true)}>
+        <p>{"9"}</p>
+      </button>
+      <button onClick={() => assignValue("*", true)}>
         <FontAwesomeIcon icon={faXmark} className={styles.icon} />
       </button>
-      <button onClick={() => assignValue("4", true)}>{"4"}</button>
-      <button onClick={() => assignValue("5", true)}>{"5"}</button>
-      <button onClick={() => assignValue("6", true)}>{"6"}</button>
+      <button onClick={() => assignValue("4", true)}>
+        <p>{"4"}</p>
+      </button>
+      <button onClick={() => assignValue("5", true)}>
+        <p>{"5"}</p>
+      </button>
+      <button onClick={() => assignValue("6", true)}>
+        <p>{"6"}</p>
+      </button>
       <button className="text-xl" onClick={() => assignValue("-", true)}>
         <FontAwesomeIcon icon={faMinus} className={styles.icon} width={15} />
       </button>
-      <button onClick={() => assignValue("1", true)}>{"1"}</button>
-      <button onClick={() => assignValue("2", true)}>{"2"}</button>
-      <button onClick={() => assignValue("3", true)}>{"3"}</button>
+      <button onClick={() => assignValue("1", true)}>
+        <p>{"1"}</p>
+      </button>
+      <button onClick={() => assignValue("2", true)}>
+        <p>{"2"}</p>
+      </button>
+      <button onClick={() => assignValue("3", true)}>
+        <p>{"3"}</p>
+      </button>
       <button className="text-xl" onClick={() => assignValue("+", true)}>
         <FontAwesomeIcon icon={faPlus} className={styles.icon} width={15} />
       </button>
-      <button onClick={() => assignValue("", false)}>{"C"}</button>
-      <button onClick={() => assignValue("0", true)}>{"0"}</button>
-      <button onClick={() => assignValue(".", true)}>{"."}</button>
+      <button onClick={() => assignValue("", false)}>
+        <p>{"C"}</p>
+      </button>
+      <button onClick={() => assignValue("0", true)}>
+        <p>{"0"}</p>
+      </button>
+      <button onClick={() => assignValue(".", true)}>
+        <p>{"."}</p>
+      </button>
       <button
         onClick={() => {
           if (!inputRef.current) return;
