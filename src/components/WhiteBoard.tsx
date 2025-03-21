@@ -7,32 +7,30 @@ import {
   useSensor,
   MouseSensor,
   TouchSensor,
-  KeyboardSensor,
   useSensors,
   Modifier,
-  DragOverlay,
-  DropAnimation,
-  UniqueIdentifier,
 } from "@dnd-kit/core";
 
 import { OverflowWrapper } from "lib/BaseWidgetStuff";
 
 import WidgetBase from "components/WidgetBase";
-import { restrictToBoundingRect, createSnapModifier } from "@dnd-kit/modifiers";
+import {
+  createSnapModifier,
+  restrictToParentElement,
+} from "@dnd-kit/modifiers";
 import * as Widgets from "components/widget-components";
 
 let nextId = 0;
-const gridSize = 30;
 
 export default function WhiteBoard() {
+  const gridSize = 30;
+
   const [widgets, addWidget] = useState<ReactElement<typeof WidgetBase>[]>([]);
-  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-  const [doDropAnim, setDropAnim] = useState<boolean>(false);
   const [doSnapGrid, setSnapGrid] = useState<boolean>(false);
 
   const delayConstraint = {
     delay: 400,
-    tolerance: 10
+    tolerance: 10,
   };
 
   const mouseSensor = useSensor(MouseSensor, {
@@ -41,20 +39,10 @@ export default function WhiteBoard() {
   const touchSensor = useSensor(TouchSensor, {
     activationConstraint: delayConstraint,
   });
-  const keyboardSensor = useSensor(KeyboardSensor, {});
-  const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
+  const sensors = useSensors(mouseSensor, touchSensor);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const restrictToWhiteBoard: Modifier = ({ draggingNodeRect, transform }) => {
-    if (!draggingNodeRect || !wrapperRef.current) return transform;
-
-    return restrictToBoundingRect(
-      transform,
-      draggingNodeRect,
-      wrapperRef.current.getBoundingClientRect()
-    );
-  };
   const snapToGrid: Modifier = createSnapModifier(gridSize);
 
   const clickHandler = (widgetName: string) => {
@@ -83,11 +71,6 @@ export default function WhiteBoard() {
     }
   };
 
-  const defaultDropAnim: DropAnimation = {
-    duration: 250,
-    easing: "ease",
-  };
-
   return (
     <OverflowWrapper>
       <div
@@ -113,24 +96,16 @@ export default function WhiteBoard() {
           sensors={sensors}
           modifiers={
             doSnapGrid
-              ? [restrictToWhiteBoard, snapToGrid]
-              : [restrictToWhiteBoard]
+              ? [restrictToParentElement, snapToGrid]
+              : [restrictToParentElement]
           }
-          onDragStart={({ active }) => setActiveId(active.id)}
-          onDragEnd={({ over }) => {
-            setDropAnim(over && over.id != activeId ? true : false);
-            setActiveId(null);
-          }}
         >
-          <div ref={wrapperRef} className="bg-lime-400 flex-grow border-2">
+          <div
+            ref={wrapperRef}
+            className="bg-lime-400 flex-grow border-2 contain-paint"
+          >
             {widgets}
           </div>
-
-          <DragOverlay dropAnimation={doDropAnim ? defaultDropAnim : null}>
-            {activeId !== null
-              ? widgets.find((item: ReactElement) => item.key == activeId)
-              : null}
-          </DragOverlay>
         </DndContext>
       </div>
     </OverflowWrapper>

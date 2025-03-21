@@ -9,9 +9,9 @@ import {
 
 import { Draggable } from "lib/BaseWidgetStuff";
 import { Coordinates, DragEndEvent } from "@dnd-kit/core/dist/types";
-import { useState, useCallback, HTMLAttributes } from "react";
+import { useState, useCallback, HTMLAttributes, CSSProperties } from "react";
 
-interface WidgetBaseProps extends Omit<HTMLAttributes<HTMLDivElement>, "id">{
+interface WidgetBaseProps extends Omit<HTMLAttributes<HTMLDivElement>, "id"> {
   id: string | number;
   handle?: boolean;
   style?: React.CSSProperties;
@@ -43,7 +43,7 @@ export function WidgetBase({
   });
 
   const { over, setNodeRef: setDroppableRef } = useDroppable({
-    id: id
+    id: id,
   });
 
   const borderStyle =
@@ -66,11 +66,11 @@ export function WidgetBase({
         setCoordinates(({ x, y }) => {
           return {
             x: x + delta.x,
-            y: y + delta.y
+            y: y + delta.y,
           };
         });
       }
-    }
+    },
   });
 
   return (
@@ -112,7 +112,7 @@ export default function WidgetBaseVisualCue({
 
   const borderStyle =
     isDragging && over !== null && over.id != id
-      ? " outline outline-2 outline-red-500"
+      ? "outline outline-2 outline-red-500"
       : "";
 
   const combinedRef = (node: HTMLElement | null) => {
@@ -120,11 +120,16 @@ export default function WidgetBaseVisualCue({
     setDroppableRef(node);
   };
 
-  const defaultCoordinates = top && left ? { x: left, y: top } : { x: 0, y: 0 };
+  const defaultCoordinates =
+    typeof top === "number" && typeof left === "number"
+      ? { x: left, y: top }
+      : { x: 0, y: 0 };
   const [{ x, y }, setCoordinates] = useState<Coordinates>(defaultCoordinates);
 
   const [isPending, setIsPending] = useState(false);
   const [pendingDelayMs, setPendingDelay] = useState(0);
+
+  const [deltaCoords, setDeltaCoords] = useState<Coordinates | null>(null);
 
   const handlePending = useCallback(
     (event: DragPendingEvent) => {
@@ -140,13 +145,16 @@ export default function WidgetBaseVisualCue({
 
   const handlePendingEnd = useCallback(() => setIsPending(false), []);
   const handleDragEnd = (event: DragEndEvent) => {
-    if (event.active.id === id && (!event.over || event.over.id == id)) {
+    if (event.active.id === id && (!event.over || event.over.id === id)) {
       setCoordinates(({ x, y }) => {
         return {
           x: x + event.delta.x,
-          y: y + event.delta.y
+          y: y + event.delta.y,
         };
       });
+    } else if (event.active.id === id && event.over && event.over.id !== id) {
+      setDeltaCoords({ x: event.delta.x, y: event.delta.y });
+      setTimeout(() => setDeltaCoords(null), 250);
     }
   };
 
@@ -162,7 +170,7 @@ export default function WidgetBaseVisualCue({
     onDragEnd: combinedEndCallback,
   });
 
-  const pendingStyle: React.CSSProperties = isPending
+  const pendingStyle: CSSProperties = isPending
     ? { animationDuration: `${pendingDelayMs}ms` }
     : {};
 
@@ -173,9 +181,19 @@ export default function WidgetBaseVisualCue({
         dragging={isDragging}
         handle={handle}
         listeners={listeners}
-        style={{ ...style, ...pendingStyle, left: `${x}px`, top: `${y}px` }}
-        className={className + borderStyle}
+        style={
+          {
+            ...style,
+            ...pendingStyle,
+            left: `${x}px`,
+            top: `${y}px`,
+            "--delta-x": `${deltaCoords?.x ?? 0}px`,
+            "--delta-y": `${deltaCoords?.y ?? 0}px`,
+          } as CSSProperties
+        }
+        className={`${className} ${borderStyle}`}
         isPendingDelay={isPending && pendingDelayMs > 0}
+        deltaCoords={deltaCoords}
         transform={transform}
         {...attributes}
       >
