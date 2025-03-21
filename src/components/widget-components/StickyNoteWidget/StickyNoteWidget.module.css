@@ -1,0 +1,36 @@
+.stickyNote {
+    background-color: rgb(255, 167, 35);
+    /* Background color */
+    background-image: url('/paper.jpg');
+    /* Texture image */
+    background-blend-mode: multiply;
+    /* Blend the color and texture */
+    padding: 4px 4px 0 4px;
+    /* Uniform padding */
+    box-sizing: border-box;
+    /* Include padding within dimensions */
+    border-radius: 3px;
+    z-index: 0;
+}
+
+.textarea {
+    font-size: large;
+    resize: both;
+    min-width: 6em;
+    min-height: 3em;
+    max-width: 30vw;
+    max-height: 30vw;
+}
+
+/* For browsers that support `scrollbar-*` properties */
+@supports (scrollbar-color: auto) {
+    .textarea {
+        scrollbar-width: thin;
+        scrollbar-color: gray transparent;
+    }
+}
+
+/* Otherwise, use `::-webkit-scrollbar-*` pseudo-elements */
+@supports selector(::-webkit-scrollbar) {
+    
+}
