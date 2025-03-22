@@ -1,5 +1,4 @@
 .stickyNote {
-  background-color: #ffa723;
   background-image: url('/paper.jpg');
   background-blend-mode: multiply;
 
@@ -14,10 +13,11 @@
 .textarea {
   font-size: large;
   resize: both;
-  min-width: 7em;
-  min-height: 3em;
-  max-width: 30vw;
-  max-height: 30vw;
+  min-width: 13rem;
+  min-height: 6rem;
+  max-width: 32rem;
+  max-height: 26rem;
+
 }
 
 /* For browsers that support `scrollbar-*` properties */
@@ -42,6 +42,42 @@
   border-radius: 2px;
   transition: box-shadow 0.2s ease, background-color 0.2s ease;
   display: flex;
+}
+
+.options input[type="color"] {
+  cursor: pointer;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.options input[type="number"] {
+  border: 2px solid rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  padding-left: 2px;
+  width: 85%;
+}
+
+.options input[type="number"]:focus-visible {
+  outline: none;
+  border: 2px solid rgb(0, 0, 0);
+}
+
+.colorContainer {
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+  display: flex;
+  padding: 4px;
+}
+
+.colorContainer:hover {
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  background-color: rgba(119, 119, 119, 0.5);
+}
+
+.colorContainer:active {
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.6);
+  background-color: rgba(119, 119, 119, 0.5);
 }
 
 .inactiveButton:hover {

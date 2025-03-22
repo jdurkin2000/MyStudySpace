@@ -71,7 +71,7 @@ export default function WhiteBoard() {
 
   return (
       <div
-        className="flex flex-grow bg-gray-300 min-w-3/4 place-self-center shadow-[inset_0_4px_4px_rgba(0,0,0,0.8)]"
+        className="flex flex-grow bg-gray-300 min-w-screen place-self-center shadow-[inset_0_4px_4px_rgba(0,0,0,0.8)]"
         tabIndex={-1}
         onKeyDown={keyHandlerDown}
         onKeyUp={keyHandlerUp}

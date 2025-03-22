@@ -1,0 +1,56 @@
+@property --progress {
+    syntax: "<number>";
+    initial-value: 0;
+    inherits: false;
+}
+
+.Draggable {
+    position: absolute;
+    width: fit-content;
+    transition: transform 250ms ease;
+
+    box-shadow: var(--box-shadow);
+    transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0) scale(var(--scale, 1));
+    transition: box-shadow 300ms ease;
+
+    touch-action: none;
+    cursor: grab;
+
+    background-color: skyblue;
+    min-width: 8rem;
+    min-height: 8rem;
+    border-radius: 50%;
+
+    &:focus-visible:not(.active &) {
+        box-shadow: 0 0 0 3px #4c9ffe;
+    }
+
+    &.dragging {
+        z-index: 9999;
+        transition: none;
+        cursor: grabbing;
+
+        --scale: 1.06;
+        --box-shadow: -1px 0 15px 0 rgba(34, 33, 81, 0.01),
+            0px 15px 15px 0 rgba(34, 33, 81, 0.25);
+
+        &:focus-visible {
+            --box-shadow: 0 0px 10px 2px #4c9ffe;
+        }
+    }
+
+    &.dragging {
+        animation: pop 1s cubic-bezier(0.18, 0.67, 0.6, 1.22);
+    }
+}
+
+@keyframes pop {
+    0% {
+        transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0) scale(1);
+    }
+
+    100% {
+        transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0) scale(var(--scale));
+        box-shadow: var(--box-shadow);
+    }
+}
