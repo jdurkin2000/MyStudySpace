@@ -19,7 +19,7 @@ export function StickyNoteWidget(props: WidgetBaseProps) {
   const [bgColor, setBgColor] = useState<string>(defaultColor);
 
   const defaultTextSize = "16";
-  const [textSize, setTextSize] = useState<string>(defaultTextSize)
+  const [textSize, setTextSize] = useState<string>(defaultTextSize);
 
   return (
     <WidgetBase
@@ -31,8 +31,8 @@ export function StickyNoteWidget(props: WidgetBaseProps) {
         className={`focus-visible:outline-none ${styles.textarea} ${
           isUnderline ? "underline" : ""
         } ${isBold ? "font-bold" : ""} ${isItalic ? "italic" : ""}`}
-        style= {{
-          fontSize: `${textSize}px`
+        style={{
+          fontSize: `${textSize}px`,
         }}
         maxLength={Number.MAX_SAFE_INTEGER}
       />
@@ -67,12 +67,18 @@ export function StickyNoteWidget(props: WidgetBaseProps) {
           </button>
 
           <div className="inline-flex">
-          <input
-          onInput={(e) => {
-            setTextSize(e.currentTarget.value);
-          }}
-          type="number" name="text-size" id="text-size" defaultValue={defaultTextSize} min={6} max={72}/>
-          <p className="absolute left-33 top-1.5">px</p>
+            <input
+              onInput={(e) => {
+                setTextSize(e.currentTarget.value);
+              }}
+              type="number"
+              name="text-size"
+              id="text-size"
+              defaultValue={defaultTextSize}
+              min={6}
+              max={72}
+            />
+            <p className="absolute left-33 top-1.5">px</p>
           </div>
         </div>
 
@@ -85,7 +91,7 @@ export function StickyNoteWidget(props: WidgetBaseProps) {
             id="bgColor picker"
             defaultValue={defaultColor}
           />
-          <FontAwesomeIcon icon={faPalette} className={styles.icon}/>
+          <FontAwesomeIcon icon={faPalette} className={styles.icon} />
         </label>
       </div>
     </WidgetBase>

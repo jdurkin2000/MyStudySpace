@@ -14,10 +14,11 @@
   font-size: large;
   resize: both;
   min-width: 13rem;
-  min-height: 6rem;
+  min-height: 3rem;
   max-width: 32rem;
   max-height: 26rem;
-
+  border-top: 1px solid black;
+  margin-top: 2px;
 }
 
 /* For browsers that support `scrollbar-*` properties */
@@ -42,6 +43,8 @@
   border-radius: 2px;
   transition: box-shadow 0.2s ease, background-color 0.2s ease;
   display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .options input[type="color"] {
