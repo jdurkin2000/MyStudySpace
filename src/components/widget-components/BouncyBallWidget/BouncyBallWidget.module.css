@@ -10,16 +10,20 @@
     transition: transform 250ms ease;
 
     box-shadow: var(--box-shadow);
-    transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0) scale(var(--scale, 1));
+    transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0) scale(var(--scale, 1)) rotate(var(--rotate, 0deg));
+    
     transition: box-shadow 300ms ease;
 
     touch-action: none;
     cursor: grab;
 
-    background-color: skyblue;
+    background-image: url("/volleyball.svg");
+    background-position: center;
+    background-size: 130%;
     min-width: 8rem;
     min-height: 8rem;
     border-radius: 50%;
+
 
     &:focus-visible:not(.active &) {
         box-shadow: 0 0 0 3px #4c9ffe;
@@ -37,9 +41,7 @@
         &:focus-visible {
             --box-shadow: 0 0px 10px 2px #4c9ffe;
         }
-    }
 
-    &.dragging {
         animation: pop 1s cubic-bezier(0.18, 0.67, 0.6, 1.22);
     }
 }
