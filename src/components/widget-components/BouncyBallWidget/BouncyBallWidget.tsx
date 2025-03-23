@@ -136,6 +136,7 @@ export function BouncyBallWidget(props: WidgetBaseProps) {
   return (
       <div
       ref={combinedRef}
+      data-display-name="BouncyBallWidget"
       className={
         classNames(styles.Draggable, isDragging && styles.dragging) +
         " " +
