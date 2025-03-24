@@ -2,7 +2,18 @@ import WidgetBase, { WidgetBaseProps } from "components/WidgetBase";
 import { calculate } from "lib/calculator";
 import { useEffect, useRef, useState } from "react";
 import styles from "./CalculatorWidget.module.css";
-import Image from "next/image";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBackspace,
+  faPercent,
+  faDivide,
+  faXmark,
+  faMinus,
+  faPlus,
+  faEquals,
+  faPlusMinus,
+} from "@fortawesome/free-solid-svg-icons";
 
 export function CalculatorWidget(props: WidgetBaseProps) {
   function evaluateExp(expression: string): string {
@@ -89,7 +100,6 @@ export function CalculatorWidget(props: WidgetBaseProps) {
         className="col-span-4 text-right pr-1"
       />
       <button
-        className="place-items-center"
         onClick={() => {
           if (!inputRef.current) return;
 
@@ -98,13 +108,7 @@ export function CalculatorWidget(props: WidgetBaseProps) {
           checkOverflow();
         }}
       >
-        <Image
-          className="dark:invert"
-          src="/backspace.svg"
-          alt="Backspace icon"
-          width={22}
-          height={22}
-        />
+        <FontAwesomeIcon icon={faBackspace} className={styles.icon} />
       </button>
       <button
         onClick={() => {
@@ -121,51 +125,59 @@ export function CalculatorWidget(props: WidgetBaseProps) {
           checkOverflow();
         }}
       >
-        {"+/-"}
+        <FontAwesomeIcon icon={faPlusMinus} className={styles.icon} />
       </button>
-      <button onClick={() => assignValue("%", true)}>{"%"}</button>
-      <button
-        className="place-items-center"
-        onClick={() => assignValue("/", true)}
-      >
-        <Image
-          className="dark:invert"
-          src="/divide.svg"
-          alt="Division icon"
-          width={20}
-          height={20}
-        />
+      <button onClick={() => assignValue("%", true)}>
+        <FontAwesomeIcon icon={faPercent} className={styles.icon} />
       </button>
-      <button onClick={() => assignValue("7", true)}>{"7"}</button>
-      <button onClick={() => assignValue("8", true)}>{"8"}</button>
-      <button onClick={() => assignValue("9", true)}>{"9"}</button>
-      <button
-        className="place-items-center"
-        onClick={() => assignValue("*", true)}
-      >
-        <Image
-          className="dark:invert"
-          src="/multiply.svg"
-          alt="Multiplication icon"
-          width={20}
-          height={20}
-        />
+      <button onClick={() => assignValue("/", true)}>
+        <FontAwesomeIcon icon={faDivide} className={styles.icon} />
       </button>
-      <button onClick={() => assignValue("4", true)}>{"4"}</button>
-      <button onClick={() => assignValue("5", true)}>{"5"}</button>
-      <button onClick={() => assignValue("6", true)}>{"6"}</button>
+      <button onClick={() => assignValue("7", true)}>
+        <p>{"7"}</p>
+      </button>
+      <button onClick={() => assignValue("8", true)}>
+        <p>{"8"}</p>
+      </button>
+      <button onClick={() => assignValue("9", true)}>
+        <p>{"9"}</p>
+      </button>
+      <button onClick={() => assignValue("*", true)}>
+        <FontAwesomeIcon icon={faXmark} className={styles.icon} />
+      </button>
+      <button onClick={() => assignValue("4", true)}>
+        <p>{"4"}</p>
+      </button>
+      <button onClick={() => assignValue("5", true)}>
+        <p>{"5"}</p>
+      </button>
+      <button onClick={() => assignValue("6", true)}>
+        <p>{"6"}</p>
+      </button>
       <button className="text-xl" onClick={() => assignValue("-", true)}>
-        {"-"}
+        <FontAwesomeIcon icon={faMinus} className={styles.icon} width={15} />
       </button>
-      <button onClick={() => assignValue("1", true)}>{"1"}</button>
-      <button onClick={() => assignValue("2", true)}>{"2"}</button>
-      <button onClick={() => assignValue("3", true)}>{"3"}</button>
+      <button onClick={() => assignValue("1", true)}>
+        <p>{"1"}</p>
+      </button>
+      <button onClick={() => assignValue("2", true)}>
+        <p>{"2"}</p>
+      </button>
+      <button onClick={() => assignValue("3", true)}>
+        <p>{"3"}</p>
+      </button>
       <button className="text-xl" onClick={() => assignValue("+", true)}>
-        {"+"}
+        <FontAwesomeIcon icon={faPlus} className={styles.icon} width={15} />
       </button>
-      <button onClick={() => assignValue("", false)}>{"C"}</button>
-      <button onClick={() => assignValue("0", true)}>{"0"}</button>
-      <button onClick={() => assignValue(".", true)}>{"."}</button>
+      <button onClick={() => assignValue("", false)}>
+        <p>{"C"}</p>
+      </button>
+      <button onClick={() => assignValue("0", true)}>
+        <p>{"0"}</p>
+      </button>
+      <button onClick={() => assignValue(".", true)}>
+        <p>{"."}</p>
+      </button>
       <button
         onClick={() => {
           if (!inputRef.current) return;
@@ -173,7 +185,7 @@ export function CalculatorWidget(props: WidgetBaseProps) {
           checkOverflow();
         }}
       >
-        {"="}
+        <FontAwesomeIcon icon={faEquals} className={styles.icon} />
       </button>
     </WidgetBase>
   );
