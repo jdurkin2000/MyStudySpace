@@ -1,9 +1,11 @@
 import { WidgetBaseProps } from "components/WidgetBase";
-import { useDndMonitor, useDraggable, useDroppable } from "@dnd-kit/core";
+import { useDndMonitor, useDraggable } from "@dnd-kit/core";
 import {
   ClientRect,
   Coordinates,
   DragEndEvent,
+  DragMoveEvent,
+  DragStartEvent,
 } from "@dnd-kit/core/dist/types";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import classNames from "classnames";
@@ -19,10 +21,6 @@ export function BouncyBallWidget(props: WidgetBaseProps) {
     setNodeRef: setDraggableRef,
     transform,
   } = useDraggable({
-    id: props.id,
-  });
-
-  const { setNodeRef: setDroppableRef } = useDroppable({
     id: props.id,
   });
 
@@ -43,24 +41,39 @@ export function BouncyBallWidget(props: WidgetBaseProps) {
   const FRICTION = 0.994;
   const REST_THRESH = 40;
 
+  const [mouseVel, setMouseVel] = useState({
+    timeStamp: Date.now(),
+    x: 0,
+    y: 0,
+  });
   const [vel, setVel] = useState({ x: 1000, y: 0 });
   const [finalTransform, setFinalTransform] = useState({ x: 0, y: 0 });
+  const [rotation, setRotation] = useState(0);
 
   const ballRef = useRef<HTMLDivElement | null>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [whiteBoardRect, setWhiteBoardRect] = useState<ClientRect | null>(null);
 
   useEffect(() => {
+    if (!isDragging) setRotation((prev) => prev + vel.x * DELTA_T);
+  }, [DELTA_T, isDragging, vel.x]);
+
+  useEffect(() => {
     if (ballRef.current) {
       const ballRect = ballRef.current.getBoundingClientRect();
-      const whiteBoardNode = ballRef.current.parentElement;
 
       setSize(({}) => ({ width: ballRect.width, height: ballRect.height }));
-      if (whiteBoardNode)
-        setWhiteBoardRect(whiteBoardNode.getBoundingClientRect());
-      // console.log("Ball size is w: " + size.width + " h: " + size.height);
     }
-  }, [size.height, size.width, whiteBoardRect?.width, whiteBoardRect?.height]);
+  }, [size.height, size.width]);
+
+  useEffect(() => {
+    if (!ballRef.current) return;
+
+    const whiteBoardNode = ballRef.current.parentElement;
+
+    if (whiteBoardNode)
+      setWhiteBoardRect(whiteBoardNode.getBoundingClientRect());
+  }, [whiteBoardRect?.width, whiteBoardRect?.height]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -85,11 +98,11 @@ export function BouncyBallWidget(props: WidgetBaseProps) {
       // Handle collisions
       if (xpos <= 0) {
         setVel((vel) => ({ x: Math.abs(vel.x * BOUNCINESS), y: vel.y }));
-      } else if (xpos + size.width >= whiteBoardRect.width) {
+      } else if (xpos + size.width * 0.75 >= whiteBoardRect.width) {
         setVel((vel) => ({ x: -Math.abs(vel.x * BOUNCINESS), y: vel.y }));
       }
 
-      if (ypos + size.height >= whiteBoardRect.height) {
+      if (ypos + size.height * 0.75 >= whiteBoardRect.height) {
         setVel((vel) => {
           const newY = -Math.abs(vel.y * BOUNCINESS); // Reverse and reduce vertical velocity
           return {
@@ -97,6 +110,8 @@ export function BouncyBallWidget(props: WidgetBaseProps) {
             y: Math.abs(newY) < REST_THRESH ? 0 : newY, // Stop bouncing if velocity is below threshold
           };
         });
+        //setFinalTransform(() => ({x: finalTransform.x, y: whiteBoardRect.bottom-size.height*1.2}))
+        //console.log("Collision after checking " + (ypos + size.height) + " >= " + whiteBoardRect.height);
       } else if (ypos <= 0) {
         setVel((vel) => ({ x: vel.x, y: Math.abs(vel.y * BOUNCINESS) }));
       }
@@ -104,6 +119,41 @@ export function BouncyBallWidget(props: WidgetBaseProps) {
 
     return () => clearInterval(interval);
   });
+
+  const handleDragStart = (event: DragStartEvent) => {
+    if (event.active.id === props.id) {
+      setCoordinates(({ x, y }) => {
+        return {
+          x: x + finalTransform.x,
+          y: y + finalTransform.y,
+        };
+      });
+
+      setFinalTransform(() => {
+        return {
+          x: 0,
+          y: 0,
+        };
+      });
+    }
+  };
+
+  const handleDragMove = (event: DragMoveEvent) => {
+    if (event.active.id === props.id) {
+      const time = Date.now();
+      if (time - mouseVel.timeStamp < 16) return;
+
+      const SENSITIVITY = 20;
+      const newVelX = (event.delta.x - mouseVel.x) * SENSITIVITY;
+      const newVelY = (event.delta.y - mouseVel.y) * SENSITIVITY;
+
+      if (newVelX > 5000 || newVelY > 5000) return;
+
+      setVel({ x: newVelX, y: newVelY });
+      setMouseVel({ timeStamp: time, x: event.delta.x, y: event.delta.y });
+      console.log("Mouse vel is: x:%d | y:%d", vel.x, vel.y);
+    }
+  };
 
   const handleDragEnd = (event: DragEndEvent) => {
     if (event.active.id === props.id) {
@@ -125,16 +175,17 @@ export function BouncyBallWidget(props: WidgetBaseProps) {
 
   useDndMonitor({
     onDragEnd: handleDragEnd,
+    onDragStart: handleDragStart,
+    onDragMove: handleDragMove,
   });
 
   const combinedRef = (node: HTMLDivElement | null) => {
     setDraggableRef(node);
-    setDroppableRef(node);
     ballRef.current = node;
   };
 
   return (
-      <div
+    <div
       ref={combinedRef}
       data-display-name="BouncyBallWidget"
       className={
@@ -146,9 +197,9 @@ export function BouncyBallWidget(props: WidgetBaseProps) {
         {
           left: `${x}px`,
           top: `${y}px`,
-          "--translate-x": `${transform?.x ?? finalTransform?.x}px`,
-          "--translate-y": `${transform?.y ?? finalTransform?.y}px`,
-          "--rotate": `${finalTransform.x / 5}deg`,
+          "--translate-x": `${transform?.x ?? finalTransform?.x ?? 0}px`,
+          "--translate-y": `${transform?.y ?? finalTransform?.y ?? 0}px`,
+          "--rotate": `${rotation}deg`,
         } as CSSProperties
       }
       {...listeners}
@@ -157,5 +208,3 @@ export function BouncyBallWidget(props: WidgetBaseProps) {
     />
   );
 }
-
-BouncyBallWidget.displayName = "BouncyBallWidget";

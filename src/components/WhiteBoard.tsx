@@ -7,7 +7,7 @@ import {
   useSensor,
   useSensors,
   Modifier,
-  PointerSensor
+  PointerSensor,
 } from "@dnd-kit/core";
 
 import WidgetBase from "components/WidgetBase";
