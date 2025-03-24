@@ -5,13 +5,10 @@ import React, { ReactElement, useRef, useState } from "react";
 import {
   DndContext,
   useSensor,
-  MouseSensor,
-  TouchSensor,
   useSensors,
   Modifier,
+  PointerSensor,
 } from "@dnd-kit/core";
-
-import { OverflowWrapper } from "lib/BaseWidgetStuff";
 
 import WidgetBase from "components/WidgetBase";
 import {
@@ -32,14 +29,23 @@ export default function WhiteBoard() {
     delay: 400,
     tolerance: 10,
   };
+  const bypassContraint = ({ event }: { event: Event }) => {
+    if (event instanceof PointerEvent) {
+      const target = event.target as HTMLElement;
+      const displayName = target?.getAttribute("data-display-name");
 
-  const mouseSensor = useSensor(MouseSensor, {
+      return displayName === "BouncyBallWidget";
+    }
+
+    return false;
+  };
+
+  const pointerSensor = useSensor(PointerSensor, {
     activationConstraint: delayConstraint,
+    bypassActivationConstraint: bypassContraint,
   });
-  const touchSensor = useSensor(TouchSensor, {
-    activationConstraint: delayConstraint,
-  });
-  const sensors = useSensors(mouseSensor, touchSensor);
+
+  const sensors = useSensors(pointerSensor);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -72,42 +78,40 @@ export default function WhiteBoard() {
   };
 
   return (
-    <OverflowWrapper>
-      <div
-        className="flex bg-gray-300 min-h-screen min-w-3/4 place-self-center shadow-[inset_0_4px_4px_rgba(0,0,0,0.8)]"
-        tabIndex={-1}
-        onKeyDown={keyHandlerDown}
-        onKeyUp={keyHandlerUp}
-      >
-        <div className="flex flex-col">
-          {Object.keys(Widgets).map((widgetName: string) => {
-            return (
-              <button
-                key={widgetName}
-                className="bg-amber-700 max-h-8 border-b-1"
-                onClick={() => clickHandler(widgetName)}
-              >
-                <p>Add {widgetName}</p>
-              </button>
-            );
-          })}
-        </div>
-        <DndContext
-          sensors={sensors}
-          modifiers={
-            doSnapGrid
-              ? [restrictToParentElement, snapToGrid]
-              : [restrictToParentElement]
-          }
-        >
-          <div
-            ref={wrapperRef}
-            className="bg-lime-400 flex-grow border-2 contain-paint"
-          >
-            {widgets}
-          </div>
-        </DndContext>
+    <div
+      className="flex flex-grow bg-gray-300 min-w-screen place-self-center shadow-[inset_0_4px_4px_rgba(0,0,0,0.8)]"
+      tabIndex={-1}
+      onKeyDown={keyHandlerDown}
+      onKeyUp={keyHandlerUp}
+    >
+      <div className="flex flex-col">
+        {Object.keys(Widgets).map((widgetName: string) => {
+          return (
+            <button
+              key={widgetName}
+              className="bg-amber-700 max-h-8 border-b-1"
+              onClick={() => clickHandler(widgetName)}
+            >
+              <p>Add {widgetName}</p>
+            </button>
+          );
+        })}
       </div>
-    </OverflowWrapper>
+      <DndContext
+        sensors={sensors}
+        modifiers={
+          doSnapGrid
+            ? [restrictToParentElement, snapToGrid]
+            : [restrictToParentElement]
+        }
+      >
+        <div
+          ref={wrapperRef}
+          className="bg-lime-400 flex-grow border-2 contain-paint"
+        >
+          {widgets}
+        </div>
+      </DndContext>
+    </div>
   );
 }
