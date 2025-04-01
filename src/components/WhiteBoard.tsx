@@ -10,7 +10,7 @@ import {
   PointerSensor,
 } from "@dnd-kit/core";
 
-import WidgetBase from "components/WidgetBase";
+import WidgetBase, { WidgetBaseProps } from "components/WidgetBase";
 import {
   createSnapModifier,
   restrictToParentElement,
@@ -22,7 +22,7 @@ let nextId = 0;
 export default function WhiteBoard() {
   const gridSize = 30;
 
-  const [widgets, addWidget] = useState<ReactElement<typeof WidgetBase>[]>([]);
+  const [widgets, setWidgets] = useState<ReactElement<typeof WidgetBase>[]>([]);
   const [doSnapGrid, setSnapGrid] = useState<boolean>(false);
 
   const delayConstraint = {
@@ -51,6 +51,15 @@ export default function WhiteBoard() {
 
   const snapToGrid: Modifier = createSnapModifier(gridSize);
 
+  const removeWidget = (id: number | string) => {
+    setWidgets((prev) =>
+      prev.filter((widget: (typeof widgets)[0]) => {
+        const item = widget as unknown as ReactElement<WidgetBaseProps>;
+        return item.props.id !== id;
+      })
+    );
+  };
+
   const clickHandler = (widgetName: string) => {
     const widget = Object.entries(Widgets).find(([key]) => key == widgetName);
 
@@ -60,7 +69,14 @@ export default function WhiteBoard() {
       if (typeof WidgetComponent === "function") {
         const currId = nextId++;
 
-        addWidget([...widgets, <WidgetComponent key={currId} id={currId} />]);
+        setWidgets([
+          ...widgets,
+          <WidgetComponent
+            key={currId}
+            id={currId}
+            removeHandler={removeWidget}
+          />,
+        ]);
       }
     }
   };
@@ -108,6 +124,7 @@ export default function WhiteBoard() {
         <div
           ref={wrapperRef}
           className="bg-lime-400 flex-grow border-2 contain-paint"
+          onContextMenu={(e) => e.preventDefault()}
         >
           {widgets}
         </div>
