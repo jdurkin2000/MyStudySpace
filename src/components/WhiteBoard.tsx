@@ -123,7 +123,7 @@ export default function WhiteBoard() {
       >
         <div
           ref={wrapperRef}
-          className="bg-lime-400 flex-grow border-2 contain-paint"
+          className="bg-white flex-grow border-2 contain-paint"
           onContextMenu={(e) => e.preventDefault()}
         >
           {widgets}
