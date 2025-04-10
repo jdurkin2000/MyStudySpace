@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactElement, useRef, useState } from "react";
+import React, { ReactElement, useEffect, useRef, useState } from "react";
 
 import {
   DndContext,
@@ -11,13 +11,13 @@ import {
 } from "@dnd-kit/core";
 
 import WidgetBase, { WidgetBaseProps } from "components/WidgetBase";
+import { IWidget } from "models/widgetSchema";
 import {
   createSnapModifier,
   restrictToParentElement,
 } from "@dnd-kit/modifiers";
 import * as Widgets from "components/widget-components";
-
-let nextId = 0;
+import { Types } from "mongoose";
 
 export default function WhiteBoard() {
   const gridSize = 30;
@@ -52,6 +52,7 @@ export default function WhiteBoard() {
   const snapToGrid: Modifier = createSnapModifier(gridSize);
 
   const removeWidget = (id: number | string) => {
+    removeWidgetDb(id);
     setWidgets((prev) =>
       prev.filter((widget: (typeof widgets)[0]) => {
         const item = widget as unknown as ReactElement<WidgetBaseProps>;
@@ -61,24 +62,18 @@ export default function WhiteBoard() {
   };
 
   const clickHandler = (widgetName: string) => {
-    const widget = Object.entries(Widgets).find(([key]) => key == widgetName);
+    const WidgetComponent = getWidgetComponent(widgetName);
 
-    if (widget) {
-      const [, WidgetComponent] = widget;
+    if (!WidgetComponent) return;
 
-      if (typeof WidgetComponent === "function") {
-        const currId = nextId++;
+    const currId = new Types.ObjectId();
+    const strId = currId.toHexString();
 
-        setWidgets([
-          ...widgets,
-          <WidgetComponent
-            key={currId}
-            id={currId}
-            removeHandler={removeWidget}
-          />,
-        ]);
-      }
-    }
+    addWidgetDb(widgetName, currId);
+    setWidgets([
+      ...widgets,
+      <WidgetComponent key={strId} id={strId} removeHandler={removeWidget} />,
+    ]);
   };
 
   const keyHandlerDown = ({ shiftKey }: { shiftKey: boolean }) => {
@@ -92,6 +87,35 @@ export default function WhiteBoard() {
       setSnapGrid(false);
     }
   };
+
+  useEffect(() => {
+    async function fetchData() {
+      const widgetData = await getWidgetDb();
+
+      const widgetComponents = widgetData.map(
+        (widget: IWidget & Types.ObjectId) => {
+          const WidgetComponent = getWidgetComponent(widget.widgetType);
+          if (!WidgetComponent) return;
+
+          const ID = widget._id as unknown as string;
+          const coords = widget.position;
+          return (
+            <WidgetComponent
+              key={ID}
+              id={ID}
+              removeHandler={removeWidget}
+              top={coords.y}
+              left={coords.x}
+            />
+          );
+        }
+      );
+
+      setWidgets(widgetComponents);
+    }
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div
@@ -131,4 +155,57 @@ export default function WhiteBoard() {
       </DndContext>
     </div>
   );
+}
+
+function getWidgetComponent(widgetType: string) {
+  const widget = Object.entries(Widgets).find(([key]) => key == widgetType);
+
+  if (widget) {
+    const [, WidgetComponent] = widget;
+    if (typeof WidgetComponent === "function") {
+      return WidgetComponent;
+    }
+  }
+
+  return null;
+}
+
+async function addWidgetDb(widgetType: string, id: Types.ObjectId) {
+  const response = await fetch("/api/widgets", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      widgetType: widgetType,
+      position: { x: 0, y: 0 },
+      _id: id,
+    }),
+  });
+
+  if (!response.ok) throw new Error("Error trying to add widget");
+}
+
+async function removeWidgetDb(id: number | string) {
+  const response = await fetch(`/api/widgets/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) console.error("Error trying to delete widget");
+
+  return response;
+}
+
+async function getWidgetDb() {
+  const response = await fetch("api/widgets");
+  if (!response.ok) {
+    console.error("Error trying to fetch database");
+    return;
+  }
+
+  const json = await response.json();
+
+  const array = json.widgets;
+
+  return array;
 }

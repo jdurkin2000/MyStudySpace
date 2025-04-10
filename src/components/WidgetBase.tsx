@@ -89,10 +89,11 @@ export default function WidgetBaseVisualCue({
   const handleDragEnd = (event: DragEndEvent) => {
     if (event.active.id === id && (!event.over || event.over.id === id)) {
       setCoordinates(({ x, y }) => {
-        return {
-          x: x + event.delta.x,
-          y: y + event.delta.y,
-        };
+        const newX = x + event.delta.x;
+        const newY = y + event.delta.y;
+        const newCoords = {x: newX, y: newY};
+        updateWidgetDb(id.toString(), newCoords)
+        return newCoords;
       });
     } else if (event.active.id === id && event.over && event.over.id !== id) {
       setDeltaCoords({ x: event.delta.x, y: event.delta.y });
@@ -189,68 +190,16 @@ export default function WidgetBaseVisualCue({
   );
 }
 
-// export function WidgetBase({
-//   id,
-//   style,
-//   className,
-//   top,
-//   left,
-//   handle,
-//   children,
-// }: WidgetBaseProps) {
-//   const {
-//     attributes,
-//     isDragging,
-//     listeners,
-//     setNodeRef: setDraggableRef,
-//     transform,
-//   } = useDraggable({
-//     id: id,
-//   });
+async function updateWidgetDb(id: string, position: Coordinates) {
+  const response = await fetch(`/api/widgets/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      position: {x: position.x, y: position.y}
+    })
+  });
 
-//   const { over, setNodeRef: setDroppableRef } = useDroppable({
-//     id: id,
-//   });
-
-//   const borderStyle =
-//     isDragging && over !== null && over.id != id
-//       ? " outline outline-2 outline-red-500"
-//       : "";
-
-//   const combinedRef = (node: HTMLElement | null) => {
-//     setDraggableRef(node);
-//     setDroppableRef(node);
-//   };
-
-//   const defaultCoordinates = top && left ? { x: left, y: top } : { x: 0, y: 0 };
-
-//   const [{ x, y }, setCoordinates] = useState<Coordinates>(defaultCoordinates);
-
-//   useDndMonitor({
-//     onDragEnd({ delta, over, active }) {
-//       if (active.id === id && (!over || over.id == id)) {
-//         setCoordinates(({ x, y }) => {
-//           return {
-//             x: x + delta.x,
-//             y: y + delta.y,
-//           };
-//         });
-//       }
-//     },
-//   });
-
-//   return (
-//     <Draggable
-//       ref={combinedRef}
-//       dragging={isDragging}
-//       handle={handle}
-//       listeners={listeners}
-//       style={{ ...style, left: `${x}px`, top: `${y}px` }}
-//       className={className + borderStyle}
-//       transform={transform}
-//       {...attributes}
-//     >
-//       {children}
-//     </Draggable>
-//   );
-// }
+  return response;
+}
