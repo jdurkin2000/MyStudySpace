@@ -11,22 +11,22 @@
         border-color: rgba(86, 196, 255, 0.479);
     }
 
-    >*:not(:first-child) {
+    button {
         background-color: rgba(160, 160, 160, 0.429);
         border-radius: 9999px;
         cursor: pointer;
     }
 
-    >*:not(:first-child):hover {
+    button:hover {
         background-color: rgba(123, 198, 255, 0.57);
     }
 
-    >*:not(:first-child):active {
+    button:active {
         background-color: rgba(123, 198, 255, 0.57);
         border: 2px solid rgba(25, 25, 25, 0.393);
     }
 
-    >*:not(:first-child):active >* {
+    button:active >* {
         transform: translate(1px, 1px);
     }
 
@@ -38,11 +38,11 @@
         background-color: rgba(255, 153, 153, 0.6);
     }
 
-    >*:last-child {
+    button:last-of-type {
         background-color: rgba(123, 198, 255, 0.792);
     }
 
-    >*:last-child:hover {
+    button:last-of-type:hover {
         background-color: rgba(145, 207, 255, 0.845);
     }
 
@@ -57,7 +57,6 @@
 
     height: 14rem;
     max-height: 14rem;
-    overflow: hidden;
 }
 
 .icon {

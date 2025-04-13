@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactElement, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import {
   DndContext,
@@ -10,20 +10,25 @@ import {
   PointerSensor,
 } from "@dnd-kit/core";
 
-import WidgetBase, { WidgetBaseProps } from "components/WidgetBase";
-import { IWidget } from "models/widgetSchema";
 import {
   createSnapModifier,
   restrictToParentElement,
 } from "@dnd-kit/modifiers";
 import * as Widgets from "components/widget-components";
-import { Types } from "mongoose";
-import { Coordinates } from "@dnd-kit/core/dist/types";
+import { addWidgetDb, getStrId, getWidgetDb, removeWidgetDb } from "@/lib/widgetDb";
+import Link from "next/link";
+
+interface IWidget {
+  _id: string;
+  widgetType: string;
+  position: {x: number, y: number};
+  label: string;
+}
 
 export default function WhiteBoard() {
   const gridSize = 30;
 
-  const [widgets, setWidgets] = useState<ReactElement<typeof WidgetBase>[]>([]);
+  const [widgets, setWidgets] = useState<IWidget[]>([]);
   const [doSnapGrid, setSnapGrid] = useState<boolean>(false);
 
   const delayConstraint = {
@@ -56,24 +61,9 @@ export default function WhiteBoard() {
     removeWidgetDb(id);
     setWidgets((prev) =>
       prev.filter((widget: (typeof widgets)[0]) => {
-        const item = widget as unknown as ReactElement<WidgetBaseProps>;
-        return item.props.id !== id;
+        return widget._id !== id;
       })
     );
-  };
-
-  const clickHandler = (widgetName: string) => {
-    const WidgetComponent = getWidgetComponent(widgetName);
-
-    if (!WidgetComponent) return;
-
-    const strId = new Types.ObjectId().toHexString();
-
-    addWidgetDb(widgetName, strId);
-    setWidgets([
-      ...widgets,
-      <WidgetComponent key={strId} id={strId} removeHandler={removeWidget} title={widgetName}/>,
-    ]);
   };
 
   const keyHandlerDown = ({ shiftKey }: { shiftKey: boolean }) => {
@@ -90,45 +80,25 @@ export default function WhiteBoard() {
 
   useEffect(() => {
     async function fetchData() {
-      const widgetData = await getWidgetDb();
+      let widgetData = await getWidgetDb();
 
-      let widgetComponents = widgetData.map(
-        (widget: IWidget & Types.ObjectId) => {
-          const WidgetComponent = getWidgetComponent(widget.widgetType);
-          if (!WidgetComponent) return;
-
-          const ID = widget._id as unknown as string;
-          const coords = widget.position;
-          return (
-            <WidgetComponent
-              key={ID}
-              id={ID}
-              removeHandler={removeWidget}
-              top={coords.y}
-              left={coords.x}
-            />
-          );
-        }
-      );
-
-      if (widgetComponents.length == 0) { // FRONT END REQUIREMENT 2.B (statically load 3 items)
-        const ids = Array.from({ length: 3 }, () => (new Types.ObjectId()).toHexString());
+      if (widgetData.length == 0) { // FRONT END REQUIREMENT 2.B (statically load 3 items)
+        const ids = Array.from({ length: 3 }, () => getStrId());
         const ref = wrapperRef.current;
         const dim = {width: ref?.clientWidth ?? 0, height: ref?.clientHeight ?? 0};
-        widgetComponents = [
-          <Widgets.ClockWidget key={ids[0]} id={ids[0]} removeHandler={removeWidget} title="ClockWidget"/>,
-          <Widgets.PomodoroWidget key={ids[1]} id={ids[1]} removeHandler={removeWidget} top={0} left={dim.width / 2} title="PomodoroWidget"/>,
-          <Widgets.StickyNoteWidget key={ids[2]} id={ids[2]} removeHandler={removeWidget} top={dim.height/2} left={dim.width/4} title="StickyNoteWidget"/>
+        widgetData = [
+          { id:ids[0], title:"ClockWidget"},
+          { id:ids[1], pos:{y:0, x:dim.width / 2}, title:"PomodoroWidget"},
+          { id:ids[2], pos:{y:dim.height/2, x:dim.width/4}, title:"StickyNoteWidget"}
         ]
-        addWidgetDb("ClockWidget", ids[0]);
-        addWidgetDb("PomodoroWidget", ids[1], {x: dim.width / 2, y: 0});
-        addWidgetDb("StickyNoteWidget", ids[2], {x: dim.width/4, y: dim.height/2});
+        addWidgetDb("ClockWidget", ids[0], "Clock");
+        addWidgetDb("PomodoroWidget", ids[1], "Pomodoro Timer", {x: dim.width / 2, y: 0});
+        addWidgetDb("StickyNoteWidget", ids[2], "Sticky Note", {x: dim.width/4, y: dim.height/2});
       }
 
-      setWidgets(widgetComponents);
+      setWidgets(widgetData);
     }
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -139,17 +109,7 @@ export default function WhiteBoard() {
       onKeyUp={keyHandlerUp}
     >
       <div className="flex flex-col">
-        {Object.keys(Widgets).map((widgetName: string) => {
-          return (
-            <button
-              key={widgetName}
-              className="bg-amber-700 max-h-8 border-b-1"
-              onClick={() => clickHandler(widgetName)}
-            >
-              <p>Add {widgetName}</p>
-            </button>
-          );
-        })}
+        <Link href="/add-widget" className="bg-cyan-400">Add Widget</Link>
       </div>
       <DndContext
         sensors={sensors}
@@ -164,7 +124,24 @@ export default function WhiteBoard() {
           className="bg-white flex-grow border-2 contain-paint"
           onContextMenu={(e) => e.preventDefault()}
         >
-          {widgets.map(item => {return item})} {/* FRONT END REQUIREMENT 2.A (Use map to generate item components from array) */}
+          {widgets.map((widget) => {
+          const WidgetComponent = getWidgetComponent(widget.widgetType);
+          if (!WidgetComponent) return;
+
+          const ID = widget._id;
+          const coords = widget.position;
+          return (
+            <WidgetComponent
+              key={ID}
+              id={ID}
+              removeHandler={removeWidget}
+              top={coords.y}
+              left={coords.x}
+              title={widget.label}
+            />
+          );
+        }
+      )} {/* FRONT END REQUIREMENT 2.A (Use map to generate item components from array) */}
         </div>
       </DndContext>
     </div>
@@ -182,44 +159,4 @@ function getWidgetComponent(widgetType: string) {
   }
 
   return null;
-}
-
-async function addWidgetDb(widgetType: string, id: string, pos?: Coordinates) {
-  const response = await fetch("/api/widgets", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      widgetType: widgetType,
-      position: { x: pos?.x?? 0 , y: pos?.y?? 0 },
-      _id: id,
-    }),
-  });
-
-  if (!response.ok) throw new Error("Error trying to add widget");
-}
-
-async function removeWidgetDb(id: number | string) {
-  const response = await fetch(`/api/widgets/${id}`, {
-    method: "DELETE",
-  });
-
-  if (!response.ok) console.error("Error trying to delete widget");
-
-  return response;
-}
-
-async function getWidgetDb() {
-  const response = await fetch("api/widgets");
-  if (!response.ok) {
-    console.error("Error trying to fetch database");
-    return;
-  }
-
-  const json = await response.json();
-
-  const array = json.widgets;
-
-  return array;
 }

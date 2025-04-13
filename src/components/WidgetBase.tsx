@@ -16,6 +16,7 @@ import {
   CSSProperties,
   MouseEventHandler,
 } from "react";
+import { updateWidgetDb } from "lib/widgetDb";
 
 interface WidgetBaseProps extends Omit<HTMLAttributes<HTMLDivElement>, "id"> {
   id: string | number;
@@ -93,8 +94,8 @@ export default function WidgetBaseVisualCue({
       setCoordinates(({ x, y }) => {
         const newX = x + event.delta.x;
         const newY = y + event.delta.y;
-        const newCoords = {x: newX, y: newY};
-        updateWidgetDb(id.toString(), newCoords)
+        const newCoords = { x: newX, y: newY };
+        updateWidgetDb(id.toString(), newCoords);
         return newCoords;
       });
     } else if (event.active.id === id && event.over && event.over.id !== id) {
@@ -153,7 +154,7 @@ export default function WidgetBaseVisualCue({
         isPendingDelay={isPending && pendingDelayMs > 0}
         deltaCoords={deltaCoords}
         transform={transform}
-        title={title?? "Widget"}
+        title={title ?? "Widget"}
         onContextMenu={contextHandler}
         {...attributes}
       >
@@ -190,18 +191,4 @@ export default function WidgetBaseVisualCue({
       </div>
     </>
   );
-}
-
-async function updateWidgetDb(id: string, position: Coordinates) {
-  const response = await fetch(`/api/widgets/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      position: {x: position.x, y: position.y}
-    })
-  });
-
-  return response;
 }
