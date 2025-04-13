@@ -25,6 +25,7 @@ interface WidgetBaseProps extends Omit<HTMLAttributes<HTMLDivElement>, "id"> {
   className?: string;
   top?: number;
   left?: number;
+  title?: string;
   children?: React.ReactNode;
 }
 
@@ -35,6 +36,7 @@ export default function WidgetBaseVisualCue({
   removeHandler,
   style,
   className,
+  title,
   top,
   left,
   handle,
@@ -122,7 +124,6 @@ export default function WidgetBaseVisualCue({
       x: event.clientX - boundingRect.left + x, // Adjust X position relative to the parent
       y: event.clientY - boundingRect.top + y, // Adjust Y position relative to the parent
     });
-    console.log(event.clientX + " - " + boundingRect.left + " + " + x);
 
     setHideContext((prev) => !prev);
   };
@@ -152,6 +153,7 @@ export default function WidgetBaseVisualCue({
         isPendingDelay={isPending && pendingDelayMs > 0}
         deltaCoords={deltaCoords}
         transform={transform}
+        title={title?? "Widget"}
         onContextMenu={contextHandler}
         {...attributes}
       >

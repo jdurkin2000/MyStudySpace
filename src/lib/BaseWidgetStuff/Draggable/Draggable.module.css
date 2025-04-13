@@ -65,6 +65,18 @@
   }
 }
 
+.label {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+  top: 100%;
+  color: black;
+  font-size: larger;
+  font-weight: bold;
+  z-index: 10000;
+}
+
 @keyframes pulse {
   from {
     opacity: 0;

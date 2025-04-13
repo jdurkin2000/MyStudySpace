@@ -18,6 +18,7 @@ import {
 } from "@dnd-kit/modifiers";
 import * as Widgets from "components/widget-components";
 import { Types } from "mongoose";
+import { Coordinates } from "@dnd-kit/core/dist/types";
 
 export default function WhiteBoard() {
   const gridSize = 30;
@@ -66,13 +67,12 @@ export default function WhiteBoard() {
 
     if (!WidgetComponent) return;
 
-    const currId = new Types.ObjectId();
-    const strId = currId.toHexString();
+    const strId = new Types.ObjectId().toHexString();
 
-    addWidgetDb(widgetName, currId);
+    addWidgetDb(widgetName, strId);
     setWidgets([
       ...widgets,
-      <WidgetComponent key={strId} id={strId} removeHandler={removeWidget} />,
+      <WidgetComponent key={strId} id={strId} removeHandler={removeWidget} title={widgetName}/>,
     ]);
   };
 
@@ -92,7 +92,7 @@ export default function WhiteBoard() {
     async function fetchData() {
       const widgetData = await getWidgetDb();
 
-      const widgetComponents = widgetData.map(
+      let widgetComponents = widgetData.map(
         (widget: IWidget & Types.ObjectId) => {
           const WidgetComponent = getWidgetComponent(widget.widgetType);
           if (!WidgetComponent) return;
@@ -110,6 +110,20 @@ export default function WhiteBoard() {
           );
         }
       );
+
+      if (widgetComponents.length == 0) { // FRONT END REQUIREMENT 2.B (statically load 3 items)
+        const ids = Array.from({ length: 3 }, () => (new Types.ObjectId()).toHexString());
+        const ref = wrapperRef.current;
+        const dim = {width: ref?.clientWidth ?? 0, height: ref?.clientHeight ?? 0};
+        widgetComponents = [
+          <Widgets.ClockWidget key={ids[0]} id={ids[0]} removeHandler={removeWidget} title="ClockWidget"/>,
+          <Widgets.PomodoroWidget key={ids[1]} id={ids[1]} removeHandler={removeWidget} top={0} left={dim.width / 2} title="PomodoroWidget"/>,
+          <Widgets.StickyNoteWidget key={ids[2]} id={ids[2]} removeHandler={removeWidget} top={dim.height/2} left={dim.width/4} title="StickyNoteWidget"/>
+        ]
+        addWidgetDb("ClockWidget", ids[0]);
+        addWidgetDb("PomodoroWidget", ids[1], {x: dim.width / 2, y: 0});
+        addWidgetDb("StickyNoteWidget", ids[2], {x: dim.width/4, y: dim.height/2});
+      }
 
       setWidgets(widgetComponents);
     }
@@ -150,7 +164,7 @@ export default function WhiteBoard() {
           className="bg-white flex-grow border-2 contain-paint"
           onContextMenu={(e) => e.preventDefault()}
         >
-          {widgets}
+          {widgets.map(item => {return item})} {/* FRONT END REQUIREMENT 2.A (Use map to generate item components from array) */}
         </div>
       </DndContext>
     </div>
@@ -170,7 +184,7 @@ function getWidgetComponent(widgetType: string) {
   return null;
 }
 
-async function addWidgetDb(widgetType: string, id: Types.ObjectId) {
+async function addWidgetDb(widgetType: string, id: string, pos?: Coordinates) {
   const response = await fetch("/api/widgets", {
     method: "POST",
     headers: {
@@ -178,7 +192,7 @@ async function addWidgetDb(widgetType: string, id: Types.ObjectId) {
     },
     body: JSON.stringify({
       widgetType: widgetType,
-      position: { x: 0, y: 0 },
+      position: { x: pos?.x?? 0 , y: pos?.y?? 0 },
       _id: id,
     }),
   });

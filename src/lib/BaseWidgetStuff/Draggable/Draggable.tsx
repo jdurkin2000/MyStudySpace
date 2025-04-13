@@ -37,6 +37,7 @@ export const Draggable = forwardRef<HTMLDivElement, Props>(function Draggable(
     isPendingDelay = false,
     deltaCoords,
     children,
+    title,
     ...props
   },
   ref
@@ -71,6 +72,9 @@ export const Draggable = forwardRef<HTMLDivElement, Props>(function Draggable(
     >
       {handle ? <Handle {...(handle ? listeners : {})} /> : null}
       {children}
+      <div className={styles.label}>
+        <p>{title}</p>
+      </div>
     </div>
   );
 });
