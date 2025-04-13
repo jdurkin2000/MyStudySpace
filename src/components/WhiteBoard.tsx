@@ -16,7 +16,6 @@ import {
 } from "@dnd-kit/modifiers";
 import * as Widgets from "components/widget-components";
 import { addWidgetDb, getStrId, getWidgetDb, removeWidgetDb } from "@/lib/widgetDb";
-import Link from "next/link";
 
 interface IWidget {
   _id: string;
@@ -108,9 +107,6 @@ export default function WhiteBoard() {
       onKeyDown={keyHandlerDown}
       onKeyUp={keyHandlerUp}
     >
-      <div className="flex flex-col">
-        <Link href="/add-widget" className="bg-cyan-400">Add Widget</Link>
-      </div>
       <DndContext
         sensors={sensors}
         modifiers={

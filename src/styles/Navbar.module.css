@@ -34,6 +34,22 @@
   color: #007bff;
 }
 
+.addButton {
+  display: flex;
+  background-color: black;
+  color: white;
+  padding: 0.5rem  0.75rem;
+  border-radius: 4px;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.addButton:hover {
+  background-color: rgb(85, 85, 85);
+}
+
 .authButton {
   background-color: #007bff;
   color: white;

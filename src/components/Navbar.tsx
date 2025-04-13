@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import styles from '@/styles/Navbar.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const Navbar: React.FC = () => {
   // Mock authentication state - in a real app, this would come from your auth provider
@@ -33,6 +35,10 @@ const Navbar: React.FC = () => {
               </Link>
               <Link href="/profile" className={styles.navLink}>
                 Profile
+              </Link>
+              <Link href="/add-widget" className={styles.addButton}>
+                <FontAwesomeIcon icon={faPlus}/>
+                Add Widget
               </Link>
               <button onClick={handleLogout} className={styles.authButton}>
                 Logout

@@ -42,10 +42,10 @@ export default function WidgetAddForm() {
   };
 
   return (
-    <div className="w-full min-h-250 flex justify-center bg-black">
+    <div className="flex grow w-full h-full justify-center items-center">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col justify-center p-2 bg-blue-600 gap-2"
+        className="flex flex-col h-fit justify-center p-4 bg-gray-300 gap-2 rounded-lg"
       >
         <select
           name="widgetType"
@@ -54,11 +54,12 @@ export default function WidgetAddForm() {
           required
           className="bg-white"
         >
-          <option value="" />
+          <option value="">--Choose A Widget--</option>
           {Object.entries(Widgets).map(([key], k) => {
+            const formattedKey = key.split(/(?=[A-Z])/).join(" "); // Split camelCase or PascalCase into words
             return (
               <option key={k} value={key}>
-                {key}
+                {formattedKey}
               </option>
             );
           })}
@@ -71,10 +72,13 @@ export default function WidgetAddForm() {
           required
           className="bg-white"
         />
-        <button type="submit" className="bg-green-400">
+        <button type="submit" className="bg-blue-400 rounded py-1 text-white mt-4">
           Add Widget
         </button>
-        <Link href="/whiteboard" className="bg-red-500 flex justify-center">
+        <Link
+          href="/whiteboard"
+          className="bg-red-500 flex justify-center rounded text-white"
+        >
           Cancel
         </Link>
       </form>
