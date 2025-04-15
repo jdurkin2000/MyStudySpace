@@ -19,7 +19,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   const {
     widgetType: widgetType,
     position: position,
-    label,
+    label: label,
     stateValues: stateValues,
   } = await request.json();
   await connectMongoDB();

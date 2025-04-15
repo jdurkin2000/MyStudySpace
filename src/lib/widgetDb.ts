@@ -1,7 +1,12 @@
 import { Coordinates } from "@dnd-kit/core/dist/types";
 import { Types } from "mongoose";
 
-export async function addWidgetDb(widgetType: string, id: string | Types.ObjectId, title: string, pos?: Coordinates) {
+export async function addWidgetDb(
+  widgetType: string,
+  id: string | Types.ObjectId,
+  title: string,
+  pos?: Coordinates
+) {
   const response = await fetch("/api/widgets", {
     method: "POST",
     headers: {
@@ -11,7 +16,7 @@ export async function addWidgetDb(widgetType: string, id: string | Types.ObjectI
       widgetType: widgetType,
       position: { x: pos?.x ?? 0, y: pos?.y ?? 0 },
       label: title,
-      _id: (typeof id === "string")? id : id.toHexString(),
+      _id: typeof id === "string" ? id : id.toHexString(),
     }),
   });
 
@@ -42,20 +47,44 @@ export async function getWidgetDb() {
   return array;
 }
 
-export async function updateWidgetDb(id: string, position: Coordinates) {
+export async function updateWidgetDb({
+  id,
+  position,
+  stateValues,
+  label,
+}: {
+  id: string | number;
+  position?: Coordinates;
+  stateValues?: object;
+  label?: string;
+}) {
+  // Define the type of jsonBody
+  const jsonBody: {
+    position?: Coordinates;
+    stateValues?: object;
+    label?: string;
+  } = {};
+
+  if (position !== null && position !== undefined) jsonBody.position = position;
+  if (stateValues !== null && stateValues !== undefined)
+    jsonBody.stateValues = stateValues;
+  if (label !== null && label !== undefined) jsonBody.label = label;
+
   const response = await fetch(`/api/widgets/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      position: { x: position.x, y: position.y },
-    }),
+    body: JSON.stringify(jsonBody),
   });
+
+  if (!response.ok) {
+    console.error("Error updating widget");
+  }
 
   return response;
 }
 
 export function getStrId() {
-  return (new Types.ObjectId()).toHexString();
+  return new Types.ObjectId().toHexString();
 }

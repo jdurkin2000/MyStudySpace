@@ -27,6 +27,7 @@ interface WidgetBaseProps extends Omit<HTMLAttributes<HTMLDivElement>, "id"> {
   top?: number;
   left?: number;
   title?: string;
+  stateValues?: unknown;
   children?: React.ReactNode;
 }
 
@@ -95,7 +96,7 @@ export default function WidgetBaseVisualCue({
         const newX = x + event.delta.x;
         const newY = y + event.delta.y;
         const newCoords = { x: newX, y: newY };
-        updateWidgetDb(id.toString(), newCoords);
+        updateWidgetDb({id: id, position: newCoords});
         return newCoords;
       });
     } else if (event.active.id === id && event.over && event.over.id !== id) {

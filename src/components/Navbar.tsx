@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import styles from '@/styles/Navbar.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import React, { useState } from "react";
+import Link from "next/link";
+import styles from "@/styles/Navbar.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { useRouter } from "next/navigation";
 
 const Navbar: React.FC = () => {
   // Mock authentication state - in a real app, this would come from your auth provider
@@ -14,8 +15,11 @@ const Navbar: React.FC = () => {
     setIsLoggedIn(true);
   };
 
+  const router = useRouter();
+
   const handleLogout = () => {
     setIsLoggedIn(false);
+    router.push("/");
   };
 
   return (
@@ -37,7 +41,7 @@ const Navbar: React.FC = () => {
                 Profile
               </Link>
               <Link href="/add-widget" className={styles.addButton}>
-                <FontAwesomeIcon icon={faPlus}/>
+                <FontAwesomeIcon icon={faPlus} />
                 Add Widget
               </Link>
               <button onClick={handleLogout} className={styles.authButton}>
@@ -55,4 +59,4 @@ const Navbar: React.FC = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;

@@ -22,6 +22,7 @@ interface IWidget {
   widgetType: string;
   position: {x: number, y: number};
   label: string;
+  stateValues: unknown;
 }
 
 export default function WhiteBoard() {
@@ -101,12 +102,6 @@ export default function WhiteBoard() {
   }, []);
 
   return (
-    <div
-      className="flex flex-grow bg-gray-300 min-w-screen place-self-center shadow-[inset_0_4px_4px_rgba(0,0,0,0.8)]"
-      tabIndex={-1}
-      onKeyDown={keyHandlerDown}
-      onKeyUp={keyHandlerUp}
-    >
       <DndContext
         sensors={sensors}
         modifiers={
@@ -119,6 +114,8 @@ export default function WhiteBoard() {
           ref={wrapperRef}
           className="bg-white flex-grow border-2 contain-paint"
           onContextMenu={(e) => e.preventDefault()}
+          onKeyDown={keyHandlerDown}
+          onKeyUp={keyHandlerUp}
         >
           {widgets.map((widget) => {
           const WidgetComponent = getWidgetComponent(widget.widgetType);
@@ -134,13 +131,13 @@ export default function WhiteBoard() {
               top={coords.y}
               left={coords.x}
               title={widget.label}
+              stateValues={widget.stateValues}
             />
           );
         }
       )} {/* FRONT END REQUIREMENT 2.A (Use map to generate item components from array) */}
         </div>
       </DndContext>
-    </div>
   );
 }
 
