@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from '@/styles/Navbar.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -19,31 +19,37 @@ const Navbar: React.FC<Props> = (props) => {
   const handleLogin = () => {
     setIsLoggedIn(true);
   };
+
   const router = useRouter();
+
   const handleLogout = () => {
     router.push('/');
   };
 
-
-
-
-  // button to push current data to the database
+  // Delay Change of navbar (remove this and in the login button, change onClick to handleLogin to see the difference)
+  const [trigger, setTrigger] = useState(false);
+  useEffect(() => {
+    let interval: string | number | NodeJS.Timeout | undefined;
+    if (trigger) {
+      interval = setInterval(() => dispatch({ type: "NEXT_SCREEN" }), 3000);
+    }
+    return () => clearInterval(interval);
+  }, [trigger]);
 
   return (
     <nav className={styles.navbar}>
       <div className={styles.navbarContent}>
 
-        <Link href="/" className={styles.navLink}>
-          <h1>
-          {"{"} myStudySpace {"}"}</h1>
-        </Link>
+        <h1 className={styles.coolFont}>
+          {"{"} myStudySpace {"}"}
+        </h1>
         
         <div className={styles.navLinks}>
           {!isLoggedIn ? (
             <>
-            <Link href="/login" className={styles.navLink}>
-              <button onClick={handleLogin} className={styles.button}>
-                <h1>Login</h1>
+            <Link href="/login">
+              <button onClick={() => setTrigger(true)} className={styles.authButton}>
+                <h1 className={styles.coolFont}>Login</h1>
               </button>
             </Link>
             </>
@@ -62,9 +68,11 @@ const Navbar: React.FC<Props> = (props) => {
                 <FontAwesomeIcon icon={faPlus}/>
                 Add Widget
               </Link>
-              <button onClick={handleLogout} className={styles.authButton}>
-                Logout
-              </button>
+              <Link href="/logout">
+                <button onClick={handleLogout} className={styles.authButton}>
+                  <h1 className={styles.coolFont}>Logout</h1>
+                </button>
+              </Link>
             </>
           )}
         </div>
@@ -74,3 +82,7 @@ const Navbar: React.FC<Props> = (props) => {
 };
 
 export default Navbar; 
+
+function dispatch(arg0: { type: string; }): void {
+  throw new Error('Function not implemented.');
+}

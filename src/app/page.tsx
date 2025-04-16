@@ -2,23 +2,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import connectMongoDB from "../../config/mongodb";
+import Navbar from "@/components/Navbar";
 
 export default function HomePage() {
   connectMongoDB();
   return (
     <div className="flex flex-col min-h-screen">
       {/* Navigation Bar */}
-      <header className="bg-green-100 flex items-center justify-between py-4 px-6">
-        <div className="rounded bg-red-600 text-lg text-white font-bold px-4 py-2">
-          myStudySpace
-        </div>
-        <Link
-          href="/login"
-          className="flex items-center gap-2 px-4 bg-black text-white rounded py-2"
-        >
-          <span>Open Whiteboard (should be login)</span>
-        </Link>
-      </header>
+      <Navbar state={false} /> 
 
       {/* Main Section */}
       <main className="p-8 flex flex-1 flex-col md:flex-row gap-8 justify-center items-center bg-green-600">

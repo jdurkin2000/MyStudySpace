@@ -3,6 +3,9 @@ import Navbar from "@/components/Navbar";
 
 export default function Home() {
   return (
-    <><Navbar state={true}/><WhiteBoard /></>
+    <>
+      <Navbar state={true}/>
+      <WhiteBoard />
+    </>
   )
 }
