@@ -13,7 +13,7 @@ export default function HomePage() {
           myStudySpace
         </div>
         <Link
-          href="/whiteboard"
+          href="/login"
           className="flex items-center gap-2 px-4 bg-black text-white rounded py-2"
         >
           <span>Open Whiteboard (should be login)</span>
