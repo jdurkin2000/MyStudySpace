@@ -1,21 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Special+Gothic+Expanded+One&display=swap');
-
 .navbar {
   position: sticky;
   top: 0;
   z-index: 1000;
   width: 100%;
-  background-color: #ffffff;
+  background-color: #fbf5fe;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 1rem 0;
 }
 
 .coolFont {
-  font-family: "Special Gothic Expanded One", sans-serif;
-  font-size: 1.5em;
   font-weight: 400;
   font-style: normal;
-  
 }
 
 .navbarContent {
@@ -61,7 +56,7 @@
 }
 
 .authButton {
-  background-color: #007bff;
+  background-color: #ac24ed;
   color: white;
   border: none;
   padding: 0.5rem 1rem;
@@ -72,5 +67,5 @@
 }
 
 .authButton:hover {
-  background-color: #0056b3;
+  background-color: #f0ac4b;
 } 
