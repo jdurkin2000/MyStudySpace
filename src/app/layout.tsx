@@ -1,3 +1,4 @@
+import { UserProvider } from "@/components/UserContext";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "styles/globals.css";
@@ -24,11 +25,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <link rel="icon" href="/cat-spinning.gif"/>
+      <link rel="icon" href="/cat-spinning.gif" />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
-        {children}
+        <UserProvider>{children}</UserProvider>
       </body>
     </html>
   );

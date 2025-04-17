@@ -6,6 +6,7 @@ export interface IWidget extends Document {
   position: Coordinates;
   label?: string;
   stateValues?: object;
+  owner: string;
 }
 
 const posSchema = new Schema<Coordinates>({
@@ -37,6 +38,10 @@ const widgetSchema = new Schema<IWidget>({
   stateValues: {
     type: Object,
     required: false,
+  },
+  owner: {
+    type: String,
+    required: true,
   },
 });
 

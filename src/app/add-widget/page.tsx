@@ -6,6 +6,7 @@ import { addWidgetDb } from "lib/widgetDb";
 import { Types } from "mongoose";
 import * as Widgets from "components/widget-components/index";
 import Link from "next/link";
+import { useUser } from "@/components/UserContext";
 
 export default function WidgetAddForm() {
   const [formData, setFormData] = useState({
@@ -15,6 +16,8 @@ export default function WidgetAddForm() {
   });
 
   const router = useRouter();
+  const { user } = useUser();
+  if (!user) throw new Error("User is not signed in");
 
   const handleChange = (
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -32,7 +35,7 @@ export default function WidgetAddForm() {
     event.preventDefault();
 
     try {
-      addWidgetDb(formData.widgetType, new Types.ObjectId(), formData.title);
+      addWidgetDb(user.username, formData.widgetType, new Types.ObjectId(), formData.title);
 
       setFormData({ widgetType: "", title: "" }); // Req. 3D: clear input
       router.push("/whiteboard");

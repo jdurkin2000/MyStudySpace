@@ -2,9 +2,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import connectMongoDB from "../../config/mongodb";
+import { useUser } from "@/components/UserContext";
+import { useEffect } from "react";
 
 export default function HomePage() {
   connectMongoDB();
+  const {login} = useUser();
+  useEffect(() => login({username: "jimmy", password: "chiken_jockey", email:"yea"}), []);
   return (
     <div className="flex flex-col min-h-screen">
       {/* Navigation Bar */}

@@ -2,6 +2,7 @@ import { Coordinates } from "@dnd-kit/core/dist/types";
 import { Types } from "mongoose";
 
 export async function addWidgetDb(
+  owner: string,
   widgetType: string,
   id: string | Types.ObjectId,
   title: string,
@@ -17,14 +18,15 @@ export async function addWidgetDb(
       position: { x: pos?.x ?? 0, y: pos?.y ?? 0 },
       label: title,
       _id: typeof id === "string" ? id : id.toHexString(),
+      owner: owner
     }),
   });
 
   if (!response.ok) throw new Error("Error trying to add widget");
 }
 
-export async function removeWidgetDb(id: number | string) {
-  const response = await fetch(`/api/widgets/${id}`, {
+export async function removeWidgetDb(id: number | string, owner: string) {
+  const response = await fetch(`/api/widgets/${owner}/${id}`, {
     method: "DELETE",
   });
 
@@ -33,8 +35,8 @@ export async function removeWidgetDb(id: number | string) {
   return response;
 }
 
-export async function getWidgetDb() {
-  const response = await fetch("api/widgets");
+export async function getWidgetDb(owner: string) {
+  const response = await fetch(`api/widgets/${owner}`);
   if (!response.ok) {
     console.error("Error trying to fetch database");
     return;
@@ -57,7 +59,7 @@ export async function updateWidgetDb({
   position?: Coordinates;
   stateValues?: object;
   label?: string;
-}) {
+}, user: string) {
   // Define the type of jsonBody
   const jsonBody: {
     position?: Coordinates;
@@ -70,7 +72,7 @@ export async function updateWidgetDb({
     jsonBody.stateValues = stateValues;
   if (label !== null && label !== undefined) jsonBody.label = label;
 
-  const response = await fetch(`/api/widgets/${id}`, {
+  const response = await fetch(`/api/widgets/${user}/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

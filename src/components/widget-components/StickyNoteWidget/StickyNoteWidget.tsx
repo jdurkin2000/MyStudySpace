@@ -10,6 +10,7 @@ import {
   faPalette,
 } from "@fortawesome/free-solid-svg-icons";
 import { updateWidgetDb } from "@/lib/widgetDb";
+import { useUser } from "@/components/UserContext";
 
 type States = {
   isUnderline: boolean;
@@ -57,6 +58,10 @@ export function StickyNoteWidget(props: WidgetBaseProps) {
     };
   };
 
+  const {user} = useUser();
+  if (!user) throw new Error("There is no user signed in");
+  const owner = user.username;
+
   return (
     <WidgetBase
       className={`${styles.stickyNote}`}
@@ -79,7 +84,7 @@ export function StickyNoteWidget(props: WidgetBaseProps) {
           states.text = e.currentTarget.value;
           const style = e.currentTarget.style;
           states.size = {width: style.width, height: style.height};
-          updateWidgetDb({id: props.id, stateValues: states});
+          updateWidgetDb({id: props.id, stateValues: states}, owner);
         }}
         defaultValue={stateVals?.text ?? ""}
       />
@@ -95,7 +100,7 @@ export function StickyNoteWidget(props: WidgetBaseProps) {
                 const update = !prev;
                 const states = getCurrentStates();
                 states.isUnderline = update;
-                updateWidgetDb({id: props.id, stateValues: states});
+                updateWidgetDb({id: props.id, stateValues: states}, owner);
                 return update;
               })
             }
@@ -111,7 +116,7 @@ export function StickyNoteWidget(props: WidgetBaseProps) {
               const update = !prev;
               const states = getCurrentStates();
               states.isBold = update;
-              updateWidgetDb({id: props.id, stateValues: states});
+              updateWidgetDb({id: props.id, stateValues: states}, owner);
               return update;
             })
           }
@@ -127,7 +132,7 @@ export function StickyNoteWidget(props: WidgetBaseProps) {
               const update = !prev;
               const states = getCurrentStates();
               states.isItalic = update;
-              updateWidgetDb({id: props.id, stateValues: states});
+              updateWidgetDb({id: props.id, stateValues: states}, owner);
               return update;
             })}
           >
@@ -141,7 +146,7 @@ export function StickyNoteWidget(props: WidgetBaseProps) {
                 setTextSize(val);
                 const states = getCurrentStates();
                 states.textSize = val;
-                updateWidgetDb({ id: props.id, stateValues: states });
+                updateWidgetDb({ id: props.id, stateValues: states }, owner);
               }}
               type="number"
               name="text-size"
@@ -162,7 +167,7 @@ export function StickyNoteWidget(props: WidgetBaseProps) {
             onBlur={e => { //Only send put request when losing focus so requests arent constantly sent
               const states = getCurrentStates();
               states.bgColor = e.currentTarget.value;
-              updateWidgetDb({ id: props.id, stateValues: states})
+              updateWidgetDb({ id: props.id, stateValues: states}, owner)
             }}
             type="color"
             id="bgColor picker"

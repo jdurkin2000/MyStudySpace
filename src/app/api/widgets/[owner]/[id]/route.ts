@@ -1,6 +1,6 @@
 import connectMongoDB from "@/../config/mongodb";
 import Widget from "@/models/widgetSchema";
-import mongoose from "mongoose";
+import { Types } from "mongoose";
 import { NextResponse, NextRequest } from "next/server";
 
 interface RouteParams {
@@ -35,7 +35,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   const { id } = await params;
 
-  if (!mongoose.Types.ObjectId.isValid(id))
+  if (!Types.ObjectId.isValid(id))
     return NextResponse.json({ message: "Invalid ID format" }, { status: 400 });
 
   await connectMongoDB();
