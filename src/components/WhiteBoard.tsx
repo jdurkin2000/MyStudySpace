@@ -22,6 +22,7 @@ import {
   removeWidgetDb,
 } from "@/lib/widgetDb";
 import { useUser } from "./UserContext";
+import { useRouter } from "next/navigation";
 
 interface IWidget {
   _id: string;
@@ -37,8 +38,8 @@ export default function WhiteBoard() {
   const [widgets, setWidgets] = useState<IWidget[]>([]);
   const [doSnapGrid, setSnapGrid] = useState<boolean>(false);
 
+  const router= useRouter();
   const { user } = useUser();
-  if (!user) throw new Error("There is currently no user signed in");
 
   const delayConstraint = {
     delay: 400,
@@ -67,7 +68,8 @@ export default function WhiteBoard() {
   const snapToGrid: Modifier = createSnapModifier(gridSize);
 
   const removeWidget = (id: number | string) => {
-    removeWidgetDb(id, user.username);
+    if (!user) return;
+    removeWidgetDb(id, user.email);
     setWidgets((prev) =>
       prev.filter((widget: (typeof widgets)[0]) => {
         return widget._id !== id;
@@ -89,8 +91,11 @@ export default function WhiteBoard() {
 
   useEffect(() => {
     async function fetchData() {
-      if (!user) throw new Error("There is no user signed in");
-      const owner = user.username;
+      if (!user) {
+        router.push("/");
+        return;
+      }
+      const owner = user.email;
       let widgetData = await getWidgetDb(owner);
 
       if (widgetData.length == 0) {
@@ -102,7 +107,7 @@ export default function WhiteBoard() {
           height: ref?.clientHeight ?? 0,
         };
         widgetData = [
-          { id: ids[0], title: "ClockWidget" },
+          { id: ids[0], title: "ClockWidget"},
           {
             id: ids[1],
             pos: { y: 0, x: dim.width / 2 },

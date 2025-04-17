@@ -100,7 +100,7 @@ export default function WidgetBaseVisualCue({
         const newX = x + event.delta.x;
         const newY = y + event.delta.y;
         const newCoords = { x: newX, y: newY };
-        updateWidgetDb({id: id, position: newCoords}, user.username);
+        updateWidgetDb({id: id, position: newCoords}, user.email);
         return newCoords;
       });
     } else if (event.active.id === id && event.over && event.over.id !== id) {

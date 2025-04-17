@@ -1,4 +1,5 @@
-"use client"
+"use client";
+import bcrypt from "bcryptjs";
 import { useRouter } from "next/navigation";
 import {
   createContext,
@@ -13,7 +14,6 @@ type Props = {
 };
 
 type User = {
-  username: string;
   password: string;
   email: string;
 };
@@ -22,6 +22,7 @@ type ContextType = {
   user: User | null;
   login: (newUser: User) => void;
   logout: () => void;
+  signup: (newUser: User) => void;
 };
 
 const UserContext = createContext<ContextType | undefined>(undefined);
@@ -30,27 +31,41 @@ export const UserProvider = ({ children }: Props) => {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-        setUser(JSON.parse(storedUser));
+  const signup = (userData: User) => {
+    const hashed = bcrypt.hashSync(userData.password);
+    const newUser = {
+      email: userData.email,
+      password: hashed
     }
-  }, []);
 
-  const login = (newUser: User) => {
-    localStorage.setItem("user", JSON.stringify(newUser));
-    setUser(newUser);
+    console.log(JSON.stringify(newUser));
   }
+
+  const login = (user: User) => {
+    localStorage.setItem("user", JSON.stringify(user));
+    setUser(user);
+  };
 
   const logout = () => {
     localStorage.removeItem("user");
     setUser(null);
     // redirect to home page
     router.push("/");
-  }
+  };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      console.log("called");
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    }
+    signup({email: "fmekosf", password: "greenbeans"})
+  }, []);
 
   return (
-    <UserContext.Provider value={{ user, login, logout }}>
+    <UserContext.Provider value={{ user, login, logout, signup }}>
       {children}
     </UserContext.Provider>
   );

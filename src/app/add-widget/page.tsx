@@ -35,7 +35,7 @@ export default function WidgetAddForm() {
     event.preventDefault();
 
     try {
-      addWidgetDb(user.username, formData.widgetType, new Types.ObjectId(), formData.title);
+      addWidgetDb(user.email, formData.widgetType, new Types.ObjectId(), formData.title);
 
       setFormData({ widgetType: "", title: "" }); // Req. 3D: clear input
       router.push("/whiteboard");
