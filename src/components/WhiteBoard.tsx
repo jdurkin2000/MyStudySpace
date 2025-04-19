@@ -21,8 +21,8 @@ import {
   getWidgetDb,
   removeWidgetDb,
 } from "@/lib/widgetDb";
-import { useUser } from "./UserContext";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface IWidget {
   _id: string;
@@ -39,7 +39,9 @@ export default function WhiteBoard() {
   const [doSnapGrid, setSnapGrid] = useState<boolean>(false);
 
   const router= useRouter();
-  const { user } = useUser();
+  const {data: session, status} = useSession();
+  const isAuthenticated = status === "authenticated";
+  const owner = session?.user?.email ?? "guest";
 
   const delayConstraint = {
     delay: 400,
@@ -68,8 +70,7 @@ export default function WhiteBoard() {
   const snapToGrid: Modifier = createSnapModifier(gridSize);
 
   const removeWidget = (id: number | string) => {
-    if (!user) return;
-    removeWidgetDb(id, user.email);
+    removeWidgetDb(id, owner);
     setWidgets((prev) =>
       prev.filter((widget: (typeof widgets)[0]) => {
         return widget._id !== id;
@@ -91,11 +92,10 @@ export default function WhiteBoard() {
 
   useEffect(() => {
     async function fetchData() {
-      if (!user) {
+      if (!isAuthenticated) {
         router.push("/");
         return;
       }
-      const owner = user.email;
       let widgetData = await getWidgetDb(owner);
 
       if (widgetData.length == 0) {
@@ -133,7 +133,7 @@ export default function WhiteBoard() {
       setWidgets(widgetData);
     }
     fetchData();
-  }, [user]);
+  }, [isAuthenticated, owner, router]);
 
   return (
     <DndContext

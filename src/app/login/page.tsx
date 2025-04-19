@@ -1,24 +1,32 @@
 "use client";
-import React, { useState } from "react";
+import { doCredentialsLogin } from "@/lib/actions";
 import { useRouter } from "next/navigation";
-import { useUser } from "@/components/UserContext";
+import React, { FormEvent, useState } from "react";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  
   const router = useRouter();
-  const { login } = useUser();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    login({email: email, password: password});
+    try {
+      const formData = new FormData(e.currentTarget);
+      const response = await doCredentialsLogin(formData);
 
-    // Reset form or redirect user
-    setError("");
-
-    router.push("/whiteboard");
+      if (response?.error) {
+        console.error(response.error);
+        setError(response.error.message || "An error occurred");
+      } else {
+        router.push("/whiteboard");
+      }
+    } catch (error) {
+      console.error(error);
+      setError("Check your privilege (Credentials)");
+    }
   };
 
   return (

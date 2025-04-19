@@ -1,15 +1,12 @@
 "use client";
 import Image from "next/image";
 import connectMongoDB from "../../config/mongodb";
-import Navbar from "@/components/Navbar";
 
 export default function HomePage() {
   connectMongoDB();
+
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Navigation Bar */}
-      <Navbar state={false} /> 
-
       {/* Main Section */}
       <main className="p-8 flex flex-1 flex-col md:flex-row gap-8 justify-center items-center bg-[#fbf5fe]">
         {/* GIF Display */}
@@ -40,7 +37,7 @@ export default function HomePage() {
           <div>
             <h2 className="mb-2 font-bold">Zero Ads, Zero Distractions</h2>
             <p className="p-3 bg-[#f48d77] rounded text-black">
-              We’re built for students, not ad revenue — goodbye Quizlet
+              We&apos;re built for students, not ad revenue — goodbye Quizlet
               clutter.
             </p>
           </div>

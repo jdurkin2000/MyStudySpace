@@ -6,7 +6,7 @@ import { addWidgetDb } from "lib/widgetDb";
 import { Types } from "mongoose";
 import * as Widgets from "components/widget-components/index";
 import Link from "next/link";
-import { useUser } from "@/components/UserContext";
+import { useSession } from "next-auth/react";
 
 export default function WidgetAddForm() {
   const [formData, setFormData] = useState({
@@ -16,8 +16,8 @@ export default function WidgetAddForm() {
   });
 
   const router = useRouter();
-  const { user } = useUser();
-  if (!user) throw new Error("User is not signed in");
+  const {data: session} = useSession();
+  const owner = session?.user?.email ?? "guest";
 
   const handleChange = (
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -35,7 +35,7 @@ export default function WidgetAddForm() {
     event.preventDefault();
 
     try {
-      addWidgetDb(user.email, formData.widgetType, new Types.ObjectId(), formData.title);
+      addWidgetDb(owner, formData.widgetType, new Types.ObjectId(), formData.title);
 
       setFormData({ widgetType: "", title: "" }); // Req. 3D: clear input
       router.push("/whiteboard");

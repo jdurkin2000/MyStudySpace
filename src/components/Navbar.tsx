@@ -5,27 +5,24 @@ import Link from "next/link";
 import styles from "@/styles/Navbar.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { usePathname } from "next/navigation";
-import { useUser } from "./UserContext";
+import { Session } from "next-auth";
+import { doLogout } from "@/lib/actions";
 
-const Navbar: React.FC = () => {
-  const [isSplashPage, setIsSplashPage] = useState(true);
-  const { user } = useUser();
-  const path = usePathname();
+interface NavbarProps {
+  session: Session | null;
+}
+
+const Navbar = ({ session }: NavbarProps) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(!!session?.user);
 
   useEffect(() => {
-    setIsSplashPage(path == "/");
-  }, [path]);
+    setIsLoggedIn(!!session?.user);
+  }, [session]);
 
-  // Delay Change of navbar (remove this and in the login button, change onClick to handleLogin to see the difference)
-  const [trigger, setTrigger] = useState(false);
-  useEffect(() => {
-    let interval: string | number | NodeJS.Timeout | undefined;
-    if (trigger) {
-      interval = setInterval(() => dispatch({ type: "NEXT_SCREEN" }), 3000);
-    }
-    return () => clearInterval(interval);
-  }, [trigger]);
+  const handleLogout = () => {
+    doLogout();
+    setIsLoggedIn(false);
+  };
 
   return (
     <nav className={styles.navbar}>
@@ -34,19 +31,14 @@ const Navbar: React.FC = () => {
           {"{"} myStudySpace {"}"}
         </h1>
 
-        {user && <h1>Welcome, {user.email}!</h1>}
+        {isLoggedIn && <h1>Welcome, {session?.user?.email}!</h1>}
 
         <div className={styles.navLinks}>
-          {!user ? (
-            <Link href="/login">
-              <button
-                onClick={() => setTrigger(true)}
-                className={styles.authButton}
-              >
-                <h1 className={styles.coolFont}>Login</h1>
-              </button>
+          {!isLoggedIn ? (
+            <Link href="/login" className={styles.authButton}>
+              <h1 className={styles.coolFont}>Login</h1>
             </Link>
-          ) : !isSplashPage ? (
+          ) : (
             <>
               <Link href="/dashboard" className={styles.navLink}>
                 Dashboard
@@ -61,20 +53,9 @@ const Navbar: React.FC = () => {
                 <FontAwesomeIcon icon={faPlus} />
                 Add Widget
               </Link>
-              <Link href="/logout">
-                <button className={styles.authButton}>
-                  <h1 className={styles.coolFont}>Logout</h1>
-                </button>
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link href="/whiteboard" className={`!bg-blue-400 ${styles.authButton}`}>Go To Your Whiteboard</Link>
-              <Link href="/logout">
-                <button className={styles.authButton}>
-                  <h1 className={styles.coolFont}>Logout</h1>
-                </button>
-              </Link>
+              <button className={styles.authButton} onClick={handleLogout}>
+                <h1 className={styles.coolFont}>Logout</h1>
+              </button>
             </>
           )}
         </div>
@@ -84,7 +65,3 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
-
-function dispatch(arg0: { type: string }): void {
-  throw new Error("Function not implemented.");
-}

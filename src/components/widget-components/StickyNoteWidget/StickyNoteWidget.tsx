@@ -10,7 +10,7 @@ import {
   faPalette,
 } from "@fortawesome/free-solid-svg-icons";
 import { updateWidgetDb } from "@/lib/widgetDb";
-import { useUser } from "@/components/UserContext";
+import { useSession } from "next-auth/react";
 
 type States = {
   isUnderline: boolean;
@@ -58,9 +58,8 @@ export function StickyNoteWidget(props: WidgetBaseProps) {
     };
   };
 
-  const {user} = useUser();
-  if (!user) throw new Error("There is no user signed in");
-  const owner = user.email;
+  const {data: session} = useSession();
+  const owner = session?.user?.email ?? "guest";
 
   return (
     <WidgetBase
