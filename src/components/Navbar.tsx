@@ -27,8 +27,8 @@ const Navbar = ({ session }: NavbarProps) => {
   return (
     <nav className={styles.navbar}>
       <div className={styles.navbarContent}>
-        <h1 className={styles.coolFont}>
-          {"{"} myStudySpace {"}"}
+        <h1 className="font-mono p-3 text-2xl">
+          myStudySpace
         </h1>
 
         {isLoggedIn && <h1>Welcome, {session?.user?.email}!</h1>}
@@ -53,9 +53,11 @@ const Navbar = ({ session }: NavbarProps) => {
                 <FontAwesomeIcon icon={faPlus} />
                 Add Widget
               </Link>
-              <button className={styles.authButton} onClick={handleLogout}>
-                <h1 className={styles.coolFont}>Logout</h1>
-              </button>
+              <Link href="/logout">
+                <button className={styles.authButton}>
+                  <h1 className={styles.coolFont}>Logout</h1>
+                </button>
+              </Link>
             </>
           )}
         </div>
