@@ -21,6 +21,7 @@ export const {
         if (!credentials) return null;
 
         try {
+          console.log("Checking for email: ", credentials.email);
           const user = await User.findOne({ email: credentials.email }).lean();
 
           if (user) {

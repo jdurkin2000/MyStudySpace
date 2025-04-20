@@ -7,13 +7,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Session } from "next-auth";
 import { doLogout } from "@/lib/actions";
+import { usePathname } from "next/navigation";
 
 interface NavbarProps {
   session: Session | null;
 }
 
 const Navbar = ({ session }: NavbarProps) => {
+  const pathname = usePathname();
+  const [path, setPath] = useState(pathname);
   const [isLoggedIn, setIsLoggedIn] = useState(!!session?.user);
+
+  useEffect(() => {
+    setPath(pathname);
+    console.log("Path changed to: ", pathname);
+  }, [pathname]);
 
   useEffect(() => {
     setIsLoggedIn(!!session?.user);
@@ -27,33 +35,56 @@ const Navbar = ({ session }: NavbarProps) => {
   return (
     <nav className={styles.navbar}>
       <div className={styles.navbarContent}>
-        <h1 className="font-mono p-3 text-2xl">
-          myStudySpace
-        </h1>
+        <h1 className="font-mono p-3 text-2xl">myStudySpace</h1>
 
         {isLoggedIn && <h1>Welcome, {session?.user?.email}!</h1>}
 
         <div className={styles.navLinks}>
-          {!isLoggedIn ? (
-            <Link href="/login" className={styles.authButton}>
-              <h1 className={styles.coolFont}>Login</h1>
+          {path === "/login" || path === "/signup" ? (
+            <Link href="/" className={styles.navLink}>
+            Home
             </Link>
-          ) : (
+          ) : !isLoggedIn ? (
             <>
-              <Link href="/dashboard" className={styles.navLink}>
-                Dashboard
+              <Link href="/login" className={styles.authButton}>
+                <h1 className={styles.coolFont}>Login</h1>
               </Link>
-              <Link href="/study" className={styles.navLink}>
-                Study
+              <Link href="/signup" className={styles.authButton}>
+                <h1 className={styles.coolFont}>Register</h1>
               </Link>
-              <Link href="/profile" className={styles.navLink}>
-                Profile
+            </>
+          ) : path === "/whiteboard" ? (
+            <>
+              <Link href="/" className={styles.navLink}>
+                Home
               </Link>
               <Link href="/add-widget" className={styles.addButton}>
                 <FontAwesomeIcon icon={faPlus} />
                 Add Widget
               </Link>
-              <Link href="/logout">
+              <Link href="/logout" onClick={handleLogout}>
+                <button className={styles.authButton}>
+                  <h1 className={styles.coolFont}>Logout</h1>
+                </button>
+              </Link>
+            </>
+          ) : path === "/" ? (
+            <>
+              <Link href="/whiteboard" className={styles.navLink}>
+                Whiteboard
+              </Link>
+              <Link href="/logout" onClick={handleLogout}>
+                <button className={styles.authButton}>
+                  <h1 className={styles.coolFont}>Logout</h1>
+                </button>
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/" className={styles.navLink}>
+                Home
+              </Link>
+              <Link href="/logout" onClick={handleLogout}>
                 <button className={styles.authButton}>
                   <h1 className={styles.coolFont}>Logout</h1>
                 </button>

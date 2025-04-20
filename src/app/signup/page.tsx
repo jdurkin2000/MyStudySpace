@@ -1,42 +1,52 @@
 "use client";
-import { doCredentialsLogin } from "@/lib/actions";
+import { doSignup } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import React, { FormEvent, useState } from "react";
+import Image from "next/image";
+import styles from "styles/SignupPage.module.css";
 
-const LoginPage: React.FC = () => {
+const SignupPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  
+  const [loadStyle, setLoadStyle] = useState<string>("absolute");
+
   const router = useRouter();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try {
-      const formData = new FormData(e.currentTarget);
-      const response = await doCredentialsLogin(formData);
-
-      if (response?.error) {
-        console.error(response.error);
-        setError(response.error.message || "An error occurred");
-      } else {
-        router.push("/");
-      }
-    } catch (error) {
-      console.error(error);
-      setError("Invalid credentials");
+    if (loadStyle !== styles.checkmark) {
+      setError("Please pet the puppy");
+      return;
     }
 
-    setEmail("");
-    setPassword("");
+    try {
+      const formData = new FormData(e.currentTarget);
+      await doSignup(formData);
+      router.push("/");
+    } catch (error) {
+      console.error(error);
+      setError("Something went wrong :(");
+    } finally {
+      setEmail("");
+      setPassword("");
+      setLoadStyle("absolute");
+    }
+  };
+
+  const puppyHandler = () => {
+    setLoadStyle(styles.loading);
+    setTimeout(() => {
+      setLoadStyle(styles.checkmark)
+    }, 2000);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-sm">
         <h2 className="text-2xl font-bold mb-6 text-center">
-          welcome to your studyspace
+          register to begin studying
         </h2>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
@@ -72,12 +82,28 @@ const LoginPage: React.FC = () => {
               required
             />
           </div>
-
+          <div className="flex flex-row gap-2 items-center mb-8">
+            <div className={loadStyle} />
+            <Image
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-WcLDiKt49neNY2rkw3nRFW-c6Y5mZvNU8A&s"
+              width={100}
+              height={100}
+              alt="PUPPPYYYYYYY"
+              className={styles.puppy}
+              onClick={puppyHandler}
+              style={{
+                filter: (loadStyle !== "absolute") ? "brightness(50%)" : "",
+              }}
+            />
+            <p className="text-center">
+              Verify you are human by petting the puppy
+            </p>
+          </div>
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition hover:cursor-pointer"
           >
-            Submit
+            Register
           </button>
         </form>
       </div>
@@ -85,4 +111,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default SignupPage;
