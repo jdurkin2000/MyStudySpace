@@ -13,7 +13,7 @@ With our renownned widgets that help you focus and take notes, while having usef
 ![alt text](image.png)
 
 
-About The Team:
+About The Team: <br/>
 Our creators Jimmy Durkin, Maulik Durani, Ariel Hereddia, and Parth Mendpara are Computer Science students at The University of Georgia looking to foster an atmosphere of learning and success. If you have any suggestions or comments feel free to email: parthme04@gmail.com and we will make sure to get back to you shortly. Thank you so much for supporting our team!
 
 ![The team](image-1.png)
