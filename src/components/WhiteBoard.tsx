@@ -92,10 +92,6 @@ export default function WhiteBoard() {
 
   useEffect(() => {
     async function fetchData() {
-      if (!isAuthenticated) {
-        router.push("/");
-        return;
-      }
       let widgetData = await getWidgetDb(owner);
 
       if (widgetData.length == 0) {
