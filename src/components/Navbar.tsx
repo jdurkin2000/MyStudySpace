@@ -1,57 +1,95 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "@/styles/Navbar.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { useRouter } from "next/navigation";
+import { Session } from "next-auth";
+import { doLogout } from "@/lib/actions";
+import { usePathname } from "next/navigation";
 
-const Navbar: React.FC = () => {
-  // Mock authentication state - in a real app, this would come from your auth provider
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+interface NavbarProps {
+  session: Session | null;
+}
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
+const Navbar = ({ session }: NavbarProps) => {
+  const pathname = usePathname();
+  const [path, setPath] = useState(pathname);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!session?.user);
 
-  const router = useRouter();
+  useEffect(() => {
+    setPath(pathname);
+    console.log("Path changed to: ", pathname);
+  }, [pathname]);
+
+  useEffect(() => {
+    setIsLoggedIn(!!session?.user);
+  }, [session]);
 
   const handleLogout = () => {
+    doLogout();
     setIsLoggedIn(false);
-    router.push("/");
   };
 
   return (
     <nav className={styles.navbar}>
       <div className={styles.navbarContent}>
-        <Link href="/" className={styles.navLink}>
-          MyStudySpace
-        </Link>
+        <h1 className="font-mono p-3 text-2xl">myStudySpace</h1>
+
+        {isLoggedIn && <h1>Welcome, {session?.user?.email}!</h1>}
+
         <div className={styles.navLinks}>
-          {isLoggedIn ? (
+          {path === "/login" || path === "/signup" ? (
+            <Link href="/" className={styles.navLink}>
+            Home
+            </Link>
+          ) : !isLoggedIn ? (
             <>
-              <Link href="/dashboard" className={styles.navLink}>
-                Dashboard
+              <Link href="/login" className={styles.authButton}>
+                <h1 className={styles.coolFont}>Login</h1>
               </Link>
-              <Link href="/study" className={styles.navLink}>
-                Study
+              <Link href="/signup" className={styles.authButton}>
+                <h1 className={styles.coolFont}>Register</h1>
               </Link>
-              <Link href="/profile" className={styles.navLink}>
-                Profile
+            </>
+          ) : path === "/whiteboard" ? (
+            <>
+              <Link href="/" className={styles.navLink}>
+                Home
               </Link>
               <Link href="/add-widget" className={styles.addButton}>
                 <FontAwesomeIcon icon={faPlus} />
                 Add Widget
               </Link>
-              <button onClick={handleLogout} className={styles.authButton}>
-                Logout
-              </button>
+              <Link href="/logout" onClick={handleLogout}>
+                <button className={styles.authButton}>
+                  <h1 className={styles.coolFont}>Logout</h1>
+                </button>
+              </Link>
+            </>
+          ) : path === "/" ? (
+            <>
+              <Link href="/whiteboard" className={styles.navLink}>
+                Whiteboard
+              </Link>
+              <Link href="/logout" onClick={handleLogout}>
+                <button className={styles.authButton}>
+                  <h1 className={styles.coolFont}>Logout</h1>
+                </button>
+              </Link>
             </>
           ) : (
-            <button onClick={handleLogin} className={styles.authButton}>
-              Login
-            </button>
+            <>
+              <Link href="/" className={styles.navLink}>
+                Home
+              </Link>
+              <Link href="/logout" onClick={handleLogout}>
+                <button className={styles.authButton}>
+                  <h1 className={styles.coolFont}>Logout</h1>
+                </button>
+              </Link>
+            </>
           )}
         </div>
       </div>

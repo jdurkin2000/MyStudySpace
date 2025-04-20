@@ -1,7 +1,9 @@
-import { UserProvider } from "@/components/UserContext";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "styles/globals.css";
+import { auth } from "app/auth";
+import Navbar from "@/components/Navbar";
+import { SessionProvider } from "next-auth/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,18 +20,23 @@ export const metadata: Metadata = {
   description: "Personalize YOUR Study Sessions",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+
   return (
     <html lang="en">
       <link rel="icon" href="/cat-spinning.gif" />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
-        <UserProvider>{children}</UserProvider>
+        <Navbar session={session}/>
+        <SessionProvider session={session}>
+        {children}
+        </SessionProvider>
       </body>
     </html>
   );

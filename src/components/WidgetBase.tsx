@@ -17,7 +17,7 @@ import {
   MouseEventHandler,
 } from "react";
 import { updateWidgetDb } from "lib/widgetDb";
-import { useUser } from "./UserContext";
+import { useSession } from "next-auth/react";
 
 interface WidgetBaseProps extends Omit<HTMLAttributes<HTMLDivElement>, "id"> {
   id: string | number;
@@ -52,9 +52,6 @@ export default function WidgetBaseVisualCue({
     setNodeRef: setDraggableRef,
     transform,
   } = useDraggable({ id: id });
-
-  const { user } = useUser();
-  if (!user) throw new Error("There is no user signed in");
 
   const { over, setNodeRef: setDroppableRef } = useDroppable({
     id: id,
@@ -93,6 +90,9 @@ export default function WidgetBaseVisualCue({
     [id]
   );
 
+  const {data:session} = useSession();
+  const owner = session?.user?.email ?? "guest";
+
   const handlePendingEnd = useCallback(() => setIsPending(false), []);
   const handleDragEnd = (event: DragEndEvent) => {
     if (event.active.id === id && (!event.over || event.over.id === id)) {
@@ -100,7 +100,7 @@ export default function WidgetBaseVisualCue({
         const newX = x + event.delta.x;
         const newY = y + event.delta.y;
         const newCoords = { x: newX, y: newY };
-        updateWidgetDb({id: id, position: newCoords}, user.username);
+        updateWidgetDb({id: id, position: newCoords}, owner);
         return newCoords;
       });
     } else if (event.active.id === id && event.over && event.over.id !== id) {

@@ -10,7 +10,7 @@ import {
   faPalette,
 } from "@fortawesome/free-solid-svg-icons";
 import { updateWidgetDb } from "@/lib/widgetDb";
-import { useUser } from "@/components/UserContext";
+import { useSession } from "next-auth/react";
 
 type States = {
   isUnderline: boolean;
@@ -54,13 +54,12 @@ export function StickyNoteWidget(props: WidgetBaseProps) {
       bgColor: bgColor,
       textSize: textSize,
       text: textareaRef.current?.value || "",
-      size: currSize
+      size: currSize || {width: "200px", height: "100px"}
     };
   };
 
-  const {user} = useUser();
-  if (!user) throw new Error("There is no user signed in");
-  const owner = user.username;
+  const {data: session} = useSession();
+  const owner = session?.user?.email ?? "guest";
 
   return (
     <WidgetBase
@@ -75,16 +74,16 @@ export function StickyNoteWidget(props: WidgetBaseProps) {
         } ${isBold ? "font-bold" : ""} ${isItalic ? "italic" : ""}`}
         style={{
           fontSize: `${textSize}px`,
-          width: stateVals.size.width,
-          height: stateVals.size.height
+          width: stateVals?.size?.width || "200px", // Fallback to "200px" if size is undefined
+          height: stateVals?.size?.height || "100px", // Fallback to "200px" if size is undefined
         }}
         maxLength={Number.MAX_SAFE_INTEGER}
         onBlur={(e) => {
           const states = getCurrentStates();
           states.text = e.currentTarget.value;
           const style = e.currentTarget.style;
-          states.size = {width: style.width, height: style.height};
-          updateWidgetDb({id: props.id, stateValues: states}, owner);
+          states.size = { width: style.width, height: style.height };
+          updateWidgetDb({ id: props.id, stateValues: states }, owner);
         }}
         defaultValue={stateVals?.text ?? ""}
       />
