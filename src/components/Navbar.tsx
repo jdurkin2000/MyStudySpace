@@ -35,7 +35,15 @@ const Navbar = ({ session }: NavbarProps) => {
   return (
     <nav className={styles.navbar}>
       <div className={styles.navbarContent}>
-        <h1 className="font-mono p-3 text-2xl">myStudySpace</h1>
+      <div className="flex items-center">
+  <img 
+    //the cat is the logo
+    src="/cat-spinning.gif" 
+    alt="Spinning Cat Logo"
+    className="h-10 mr-2 object-contain"
+  />
+  <h1 className="font-mono p-3 text-2xl">myStudySpace</h1>
+</div>
 
         {isLoggedIn && <h1>Welcome, {session?.user?.email}!</h1>}
 
