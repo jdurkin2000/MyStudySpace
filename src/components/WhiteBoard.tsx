@@ -32,14 +32,19 @@ interface IWidget {
   stateValues: unknown;
 }
 
-export default function WhiteBoard() {
+interface IProps {
+  loadingHandler: (state: boolean) => void;
+  className: string;
+}
+
+export default function WhiteBoard(props: IProps) {
   const gridSize = 30;
 
   const [widgets, setWidgets] = useState<IWidget[]>([]);
   const [doSnapGrid, setSnapGrid] = useState<boolean>(false);
 
-  const router= useRouter();
-  const {data: session, status} = useSession();
+  const router = useRouter();
+  const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated";
   const owner = session?.user?.email ?? "guest";
 
@@ -92,6 +97,7 @@ export default function WhiteBoard() {
 
   useEffect(() => {
     async function fetchData() {
+      props.loadingHandler(true);
       let widgetData = await getWidgetDb(owner);
 
       if (widgetData.length == 0) {
@@ -103,7 +109,7 @@ export default function WhiteBoard() {
           height: ref?.clientHeight ?? 0,
         };
         widgetData = [
-          { id: ids[0], title: "ClockWidget"},
+          { id: ids[0], title: "ClockWidget" },
           {
             id: ids[1],
             pos: { y: 0, x: dim.width / 2 },
@@ -127,8 +133,10 @@ export default function WhiteBoard() {
       }
 
       setWidgets(widgetData);
+      props.loadingHandler(false);
     }
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, owner, router]);
 
   return (
@@ -142,7 +150,7 @@ export default function WhiteBoard() {
     >
       <div
         ref={wrapperRef}
-        className="bg-white flex-grow border-2 contain-paint"
+        className={`bg-white flex-grow border-t-2 contain-paint ${props.className}`}
         onContextMenu={(e) => e.preventDefault()}
         onKeyDown={keyHandlerDown}
         onKeyUp={keyHandlerUp}
