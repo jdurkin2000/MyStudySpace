@@ -13,15 +13,14 @@ export default function Home() {
         loadingHandler={setIsLoading}
         className={classNames(isLoading && "filter: brightness-25")}
       />
-      {/* {isLoading && ( */}
-
-        <div className="flex flex-col-">
+      {isLoading && (
+        <>
           <p className={styles.loadingText}>
             Please wait while your widgets load...
           </p>
           <div className={styles.loading} />
-        </div>
-      {/* )} */}
+        </>
+      )}
     </>
   );
 }
