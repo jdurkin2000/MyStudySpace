@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import connectMongoDB from "../../config/mongodb";
 import TextCard from "@/components/TextCard";
+import SpinCat from "@/components/SpinCat";
 
 export default function HomePage() {
   connectMongoDB();
@@ -13,6 +14,7 @@ export default function HomePage() {
   const [displayedText, setDisplayedText] = useState("");
   const [index, setIndex] = useState(0);
 
+  //typing
   useEffect(() => {
     if (index <= fullText.length) {
       const timeout = setTimeout(() => {
@@ -26,7 +28,7 @@ export default function HomePage() {
   return (
     <main className="flex flex-col bg-[#fdf4f0] z-0">
       <div className="flex flex-col min-h-screen">
-        {/* Typing Animation */}
+        {/* typing animation */}
         <div className="flex flex-col items-center gap-8 p-15">
           <motion.h1
             className="text-7xl font-mono text-center"
@@ -38,7 +40,7 @@ export default function HomePage() {
             {index <= fullText.length && <span className="animate-pulse">_</span>}
           </motion.h1>
 
-          {/* Intro and Button */}
+          {/* intro button too */}
           <motion.div
             className="flex flex-col md:flex-row items-center justify-center gap-6 p-10"
             initial={{ opacity: 0, y: 20 }}
@@ -80,21 +82,12 @@ export default function HomePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 2, duration: 0.8 }}
         >
-          {/* Spinning Cat GIF */}
-          <motion.div
-            className="text-center w-80 flex h-80 justify-center items-center text-[#0d0502]"
-            whileHover={{ rotate: 5 }}
-          >
-            <Image
-              src="/cat-spinning.gif"
-              alt="Spinning cat"
-              width={200}
-              height={200}
-              unoptimized
-            />
-          </motion.div>
+          {/* spinny cat */}
+<div className="flex justify-center my-10">
+  <SpinCat width={400} height={400} />
+</div>
 
-          {/* Feature Boxes */}
+          {/* features */}
           <section className="w-200 flex flex-col gap-6 text-[#0d0502] p-5">
             <motion.div whileHover={{ scale: 1.02 }}>
               <h2 className="font-mono mb-2 text-3xl font-medium">
@@ -124,7 +117,7 @@ export default function HomePage() {
         </motion.div>
       </div>
 
-      {/* Founders' Insights */}
+      {/* insights */}
       <motion.div
         className="flex flex-col justify-center items-center z-10 p-24"
         initial={{ opacity: 0 }}

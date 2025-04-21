@@ -3,6 +3,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import SpinCat from "@/components/SpinCat";
 
 export default function NotFound() {
   return (
@@ -19,14 +20,8 @@ export default function NotFound() {
         </div>
 
         {/* cat gif  */}
-        <div className="self-center text-center w-80 flex justify-center items-center text-[#0d0502]">
-          <Image
-            src="/cat-spinning.gif"
-            alt="Lost cat"
-            width={200}
-            height={200}
-            unoptimized
-          />
+        <div className="self-center text-center flex justify-center items-center text-[#0d0502]">
+<SpinCat height={180} />
         </div>
 
         {/* home button yupo */}
