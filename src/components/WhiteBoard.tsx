@@ -100,7 +100,7 @@ export default function WhiteBoard(props: IProps) {
       props.loadingHandler(true);
       let widgetData = await getWidgetDb(owner);
 
-      if (widgetData.length == 0) {
+      if (widgetData.length == 0 && status === "unauthenticated") {
         // FRONT END REQUIREMENT 2.B (statically load 3 items)
         const ids = Array.from({ length: 3 }, () => getStrId());
         const ref = wrapperRef.current;

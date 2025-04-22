@@ -56,10 +56,17 @@ const Navbar = ({ session }: NavbarProps) => {
           ) : !isLoggedIn ? (
             <>
               {path !== "/whiteboard" ? (
-                  <Link href="/whiteboard" className={styles.navLink}>
-                    Whiteboard
-                  </Link>
-              ) : (<h1>Viewing as a guest</h1>)}
+                <Link href="/whiteboard" className={styles.navLink}>
+                  Whiteboard
+                </Link>
+              ) : (
+                <h1>Viewing as a guest</h1>
+              )}
+              {path !== "/" && (
+                <Link href="/" className={styles.navLink}>
+                  Home
+                </Link>
+              )}
               <Link href="/login" className={styles.authButton}>
                 <h1 className={styles.coolFont}>Login</h1>
               </Link>
