@@ -29,7 +29,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <link rel="icon" href="/cat-spinning.gif" />
+      <link rel="icon" href="/cat-still.jpg" />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >

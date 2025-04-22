@@ -90,7 +90,7 @@ export default function WidgetBaseVisualCue({
     [id]
   );
 
-  const {data:session} = useSession();
+  const {data:session, status} = useSession();
   const owner = session?.user?.email ?? "guest";
 
   const handlePendingEnd = useCallback(() => setIsPending(false), []);
@@ -184,6 +184,7 @@ export default function WidgetBaseVisualCue({
         <button
           className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
           onClick={() => removeHandler(id)}
+          disabled={status==="unauthenticated"}
         >
           Delete
         </button>

@@ -17,7 +17,7 @@ const SignupPage: React.FC = () => {
     e.preventDefault();
 
     if (loadStyle !== styles.checkmark) {
-      setError("Please pet the puppy");
+      setError("Please pet the cat");
       return;
     }
 
@@ -85,7 +85,7 @@ const SignupPage: React.FC = () => {
           <div className="flex flex-row gap-2 items-center mb-8">
             <div className={loadStyle} />
             <Image
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-WcLDiKt49neNY2rkw3nRFW-c6Y5mZvNU8A&s"
+              src="/cat-still.jpg"
               width={100}
               height={100}
               alt="PUPPPYYYYYYY"
@@ -96,7 +96,7 @@ const SignupPage: React.FC = () => {
               }}
             />
             <p className="text-center">
-              Verify you are human by petting the puppy
+              Verify you are human by petting the cat
             </p>
           </div>
           <button

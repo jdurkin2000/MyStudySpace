@@ -55,9 +55,11 @@ const Navbar = ({ session }: NavbarProps) => {
             </Link>
           ) : !isLoggedIn ? (
             <>
-              <Link href="/whiteboard" className={styles.navLink}>
-                Whiteboard
-              </Link>
+              {path !== "/whiteboard" ? (
+                  <Link href="/whiteboard" className={styles.navLink}>
+                    Whiteboard
+                  </Link>
+              ) : (<h1>Viewing as a guest</h1>)}
               <Link href="/login" className={styles.authButton}>
                 <h1 className={styles.coolFont}>Login</h1>
               </Link>

@@ -86,6 +86,7 @@ export function StickyNoteWidget(props: WidgetBaseProps) {
           updateWidgetDb({ id: props.id, stateValues: states }, owner);
         }}
         defaultValue={stateVals?.text ?? ""}
+        spellCheck={false}
       />
 
       <div className={`${styles.options}`}>
