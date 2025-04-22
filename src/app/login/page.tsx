@@ -18,13 +18,11 @@ const LoginPage: React.FC = () => {
       const response = await doCredentialsLogin(formData);
 
       if (response?.error) {
-        console.error(response.error);
         setError(response.error.message || "An error occurred");
       } else {
         router.push("/");
       }
-    } catch (error) {
-      console.error(error);
+    } catch {
       setError("Invalid credentials");
     }
 
