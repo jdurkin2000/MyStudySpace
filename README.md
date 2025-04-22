@@ -1,4 +1,4 @@
-# 📚 Welcome to **MyStudySpace**!
+# 📚 Welcome to **MyStudySpace**! <img src="https://media.tenor.com/0EDznml5BDAAAAAj/cat-spinning.gif)" alt="spinning cat" height="70">
 
 We look forward to new users utilizing our app!
 
