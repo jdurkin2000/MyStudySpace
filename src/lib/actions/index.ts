@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import User from "@/models/userSchema";
 
 export async function doLogout() {
-    await signOut({redirectTo: "/"});
+    await signOut({ redirectTo: "/logout"});
 }
 
 export async function doCredentialsLogin(formData: FormData) {

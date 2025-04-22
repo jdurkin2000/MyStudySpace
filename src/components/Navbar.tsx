@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -28,32 +29,35 @@ const Navbar = ({ session }: NavbarProps) => {
   }, [session]);
 
   const handleLogout = () => {
-    doLogout();
     setIsLoggedIn(false);
+    doLogout();
   };
 
   return (
     <nav className={styles.navbar}>
       <div className={styles.navbarContent}>
-      <div className="flex items-center">
-  <img 
-    //the cat is the logo
-    src="/cat-spinning.gif" 
-    alt="Spinning Cat Logo"
-    className="h-10 mr-2 object-contain"
-  />
-  <h1 className="font-mono p-3 text-2xl">myStudySpace</h1>
-</div>
+        <div className="flex items-center">
+          <img
+            //the cat is the logo
+            src="/cat-spinning.gif"
+            alt="Spinning Cat Logo"
+            className="h-10 mr-2 object-contain"
+          />
+          <h1 className="font-mono p-3 text-2xl">myStudySpace</h1>
+        </div>
 
         {isLoggedIn && <h1>Welcome, {session?.user?.email}!</h1>}
 
         <div className={styles.navLinks}>
           {path === "/login" || path === "/signup" ? (
             <Link href="/" className={styles.navLink}>
-            Home
+              Home
             </Link>
           ) : !isLoggedIn ? (
             <>
+              <Link href="/whiteboard" className={styles.navLink}>
+                Whiteboard
+              </Link>
               <Link href="/login" className={styles.authButton}>
                 <h1 className={styles.coolFont}>Login</h1>
               </Link>
@@ -70,33 +74,27 @@ const Navbar = ({ session }: NavbarProps) => {
                 <FontAwesomeIcon icon={faPlus} />
                 Add Widget
               </Link>
-              <Link href="/logout" onClick={handleLogout}>
-                <button className={styles.authButton}>
-                  <h1 className={styles.coolFont}>Logout</h1>
-                </button>
-              </Link>
+              <button className={styles.authButton} onClick={handleLogout}>
+                <h1 className={styles.coolFont}>Logout</h1>
+              </button>
             </>
           ) : path === "/" ? (
             <>
               <Link href="/whiteboard" className={styles.navLink}>
                 Whiteboard
               </Link>
-              <Link href="/logout" onClick={handleLogout}>
-                <button className={styles.authButton}>
-                  <h1 className={styles.coolFont}>Logout</h1>
-                </button>
-              </Link>
+              <button className={styles.authButton} onClick={handleLogout}>
+                <h1 className={styles.coolFont}>Logout</h1>
+              </button>
             </>
           ) : (
             <>
               <Link href="/" className={styles.navLink}>
                 Home
               </Link>
-              <Link href="/logout" onClick={handleLogout}>
-                <button className={styles.authButton}>
-                  <h1 className={styles.coolFont}>Logout</h1>
-                </button>
-              </Link>
+              <button className={styles.authButton} onClick={handleLogout}>
+                <h1 className={styles.coolFont}>Logout</h1>
+              </button>
             </>
           )}
         </div>

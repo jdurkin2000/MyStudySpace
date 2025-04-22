@@ -11,7 +11,7 @@ const middleware = async (request: NextRequest) => {
   console.log(isAuthenticated, pathname);
 
   // does anything else go in here??
-  const publicPaths = ["/", "/api/widgets"];
+  const publicPaths = ["/", "/api/widgets", "/whiteboard"];
 
   if (!isAuthenticated && !publicPaths.includes(pathname)) {
     return NextResponse.redirect(new URL("/", request.url));
@@ -21,7 +21,7 @@ const middleware = async (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/add-widget/:path*", "/whiteboard/:path*"],
+  matcher: ["/add-widget/:path*"],
 };
 
 export default middleware;
