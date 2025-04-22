@@ -7,10 +7,17 @@ import {
   DragMoveEvent,
   DragStartEvent,
 } from "@dnd-kit/core/dist/types";
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import {
+  CSSProperties,
+  MouseEventHandler,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import classNames from "classnames";
 
 import styles from "./BouncyBallWidget.module.css";
+import { useSession } from "next-auth/react";
 
 // This entire component is probably the most ineffecient thing to ever exist but I could honestly not care less
 export function BouncyBallWidget(props: WidgetBaseProps) {
@@ -24,6 +31,8 @@ export function BouncyBallWidget(props: WidgetBaseProps) {
     id: props.id,
   });
 
+  const {status} = useSession()
+
   const defaultCoordinates =
     typeof props.top === "number" && typeof props.left === "number"
       ? { x: props.left, y: props.top }
@@ -31,7 +40,7 @@ export function BouncyBallWidget(props: WidgetBaseProps) {
   const [{ x, y }, setCoordinates] = useState<Coordinates>(defaultCoordinates);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { id, ...noIdProps } = props;
+  const { id, removeHandler, stateValues, ...noIdProps } = props;
 
   //Physics shit idk
   const FPS = 60;
@@ -53,6 +62,19 @@ export function BouncyBallWidget(props: WidgetBaseProps) {
   const ballRef = useRef<HTMLDivElement | null>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [whiteBoardRect, setWhiteBoardRect] = useState<ClientRect | null>(null);
+
+  const [hideContext, setHideContext] = useState(true);
+  const [contextPos, setContextPos] = useState({ x: 0, y: 0 });
+
+  const contextHandler: MouseEventHandler<HTMLDivElement> = (event) => {
+    const boundingRect = event.currentTarget.getBoundingClientRect(); // Get the parent container's position
+    setContextPos({
+      x: event.clientX - boundingRect.left + x, // Adjust X position relative to the parent
+      y: event.clientY - boundingRect.top + y, // Adjust Y position relative to the parent
+    });
+
+    setHideContext((prev) => !prev);
+  };
 
   useEffect(() => {
     if (!isDragging) setRotation((prev) => prev + vel.x * DELTA_T);
@@ -185,26 +207,59 @@ export function BouncyBallWidget(props: WidgetBaseProps) {
   };
 
   return (
-    <div
-      ref={combinedRef}
-      data-display-name="BouncyBallWidget"
-      className={
-        classNames(styles.Draggable, isDragging && styles.dragging) +
-        " " +
-        props.className
-      }
-      style={
-        {
-          left: `${x}px`,
-          top: `${y}px`,
-          "--translate-x": `${transform?.x ?? finalTransform?.x ?? 0}px`,
-          "--translate-y": `${transform?.y ?? finalTransform?.y ?? 0}px`,
-          "--rotate": `${rotation}deg`,
-        } as CSSProperties
-      }
-      {...listeners}
-      {...attributes}
-      {...noIdProps}
-    />
+    <>
+      <div
+        ref={combinedRef}
+        data-display-name="BouncyBallWidget"
+        className={
+          classNames(styles.Draggable, isDragging && styles.dragging) +
+          " " +
+          props.className
+        }
+        style={
+          {
+            left: `${x}px`,
+            top: `${y}px`,
+            "--translate-x": `${transform?.x ?? finalTransform?.x ?? 0}px`,
+            "--translate-y": `${transform?.y ?? finalTransform?.y ?? 0}px`,
+            "--rotate": `${rotation}deg`,
+          } as CSSProperties
+        }
+        {...listeners}
+        {...attributes}
+        {...noIdProps}
+      />
+      <div
+        id="editmenu"
+        className={`absolute bg-white shadow-lg border rounded`}
+        style={{
+          all: "unset", // Reset all inherited and non-inherited styles
+          position: "absolute", // Reapply necessary styles
+          top: contextPos.y,
+          left: contextPos.x,
+          zIndex: 1000,
+          backgroundColor: "white", // Reapply specific styles
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+          border: "1px solid #ccc",
+          borderRadius: "4px",
+        }}
+        hidden={hideContext}
+        onContextMenu={contextHandler}
+      >
+        <button
+          className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+          onClick={() => removeHandler(id)}
+          disabled={status === "unauthenticated"}
+        >
+          Delete
+        </button>
+        <button
+          className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+          onClick={() => setHideContext(true)}
+        >
+          Cancel
+        </button>
+      </div>
+    </>
   );
 }
