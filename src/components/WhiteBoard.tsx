@@ -22,7 +22,9 @@ import {
   removeWidgetDb,
 } from "@/lib/widgetDb";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
+import styles from "styles/loading.module.css"
+import classNames from "classnames";
 
 interface IWidget {
   _id: string;
@@ -33,8 +35,7 @@ interface IWidget {
 }
 
 interface IProps {
-  loadingHandler: (state: boolean) => void;
-  className: string;
+  session: Session | null;
 }
 
 export default function WhiteBoard(props: IProps) {
@@ -43,10 +44,12 @@ export default function WhiteBoard(props: IProps) {
   const [widgets, setWidgets] = useState<IWidget[]>([]);
   const [doSnapGrid, setSnapGrid] = useState<boolean>(false);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   const router = useRouter();
-  const { data: session, status } = useSession();
-  const isAuthenticated = status === "authenticated";
-  const owner = session?.user?.email ?? "guest";
+
+  const isAuthenticated = !!props.session?.user;
+  const owner = props.session?.user?.email ?? "guest";
 
   const delayConstraint = {
     delay: 400,
@@ -97,10 +100,10 @@ export default function WhiteBoard(props: IProps) {
 
   useEffect(() => {
     async function fetchData() {
-      props.loadingHandler(true);
+      setIsLoading(true);
       let widgetData = await getWidgetDb(owner);
 
-      if (widgetData.length == 0 && status === "unauthenticated") {
+      if (widgetData.length == 0 && isAuthenticated) {
         // FRONT END REQUIREMENT 2.B (statically load 3 items)
         const ids = Array.from({ length: 3 }, () => getStrId());
         const ref = wrapperRef.current;
@@ -133,13 +136,13 @@ export default function WhiteBoard(props: IProps) {
       }
 
       setWidgets(widgetData);
-      props.loadingHandler(false);
+      setIsLoading(false);
     }
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, owner, router]);
 
   return (
+    <>
     <DndContext
       sensors={sensors}
       modifiers={
@@ -150,7 +153,7 @@ export default function WhiteBoard(props: IProps) {
     >
       <div
         ref={wrapperRef}
-        className={`bg-white flex-grow border-t-2 contain-paint ${props.className}`}
+        className={`bg-white flex-grow border-t-2 contain-paint ${classNames(isLoading && "filter: brightness-25")}`}
         onContextMenu={(e) => e.preventDefault()}
         onKeyDown={keyHandlerDown}
         onKeyUp={keyHandlerUp}
@@ -176,6 +179,15 @@ export default function WhiteBoard(props: IProps) {
         {/* FRONT END REQUIREMENT 2.A (Use map to generate item components from array) */}
       </div>
     </DndContext>
+    {isLoading && (
+      <>
+        <p className={styles.loadingText}>
+          Please wait while your widgets load...
+        </p>
+        <div className={styles.loading} />
+      </>
+    )}
+    </>
   );
 }
 

@@ -33,10 +33,8 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
-        <Navbar session={session}/>
-        <SessionProvider session={session}>
-        {children}
-        </SessionProvider>
+        <Navbar session={session} />
+        <SessionProvider session={session}>{children}</SessionProvider>
       </body>
     </html>
   );
